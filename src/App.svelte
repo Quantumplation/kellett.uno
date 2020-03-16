@@ -6,7 +6,7 @@
 
 <style type="text/scss">
   :global(body) {
-    background-color: #FE0000;
+    background-color: #000;
   }
 
   .center {
@@ -17,21 +17,26 @@
     height: 100vh;
 
     h1 {
-      font-size: 600%;
+      font-size: 15vw;
     }
-    h1.kellett {
-      background: rgb(2,69,182);
-      background: linear-gradient(90deg, rgba(2,69,182,1) 48%, rgba(13,156,6,1) 48%);
-      background-clip: text;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+    .red{
+      color: #fe0000;
     }
-    h1.uno {
+    .blue {
+      color: #0245b6;
+    }
+    .green {
+      color: #0d9c06;
+    }
+    .yellow {
       color: #EEE800;
     }
   }
 </style>
 
 <div class="center">
-  <h1 class="kellett">kellett</h1><h1 class="uno">.uno</h1>
+  <h1 class="red">   ke</h1>
+  <h1 class="blue">  lle</h1>
+  <h1 class="green"> tt.</h1>
+  <h1 class="yellow">uno</h1>
 </div>
