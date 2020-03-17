@@ -40,7 +40,9 @@ let pressed = false;
 <div
   class="button"
   class:pressed
+  on:touchstart={() => pressed = true}
   on:mousedown={() => pressed = true}
+  on:touchend={() => pressed = false}
   on:mouseup={() => pressed = false}
 >
   <slot/>
