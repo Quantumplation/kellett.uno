@@ -1,17 +1,14 @@
 <script lang="ts">
 
-  let test: number = 100;
+  import Button from './Components/button.svelte';
+
+  let createClicked = false;
+  let joinClicked = false;
 
 </script>
 
 <style type="text/scss">
-  $unoRed: #fe0000;
-  $unoBlue: #0245b6;
-  $unoGreen: #0d9c06;
-  $unoYellow: #eee800;
-
-  @import 'utilities.scss';
-
+  @import './Components/utilities.scss';
 
   :global(body) {
     background-color: #000;
@@ -31,7 +28,7 @@
     h1 {
       font-size: 10vw;
     }
-    .red{
+    .red {
       color: $unoRed;
     }
     .blue {
@@ -54,28 +51,6 @@
     bottom: 10%;
     height: 25%;
     justify-content: space-around;
-
-    .button {
-      cursor: pointer;
-      $border: 10px;
-      $radius: 10px;
-      padding: $border;
-      width: 60%;
-      max-width: 300px;
-      margin: $border;
-      color: white;
-      background-color: $unoBlue;
-      border-radius: $border + $radius;
-
-      @include responsive-font(5vmin, 10px, 45px, 15pt);
-      
-      text-align: center;
-      box-shadow:
-        -1px 1px 0 white,
-        -2px 2px 0 white,
-        -3px 3px 0 white,
-        -4px 4px 0 white;
-    }
   }
 </style>
 
@@ -87,6 +62,6 @@
 </div>
 
 <div class="buttons">
-  <div class="button create">Create Game</div>
-  <div class="button join">Join Game</div>
+  <Button>Create</Button>
+  <Button>Join</Button>
 </div>
