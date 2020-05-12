@@ -5,7 +5,7 @@
   import Join from './Join.svelte';
   import Game from './Game.svelte';
 
-  let page = 'create';
+  let page = 'home';
   function navigate(p: string) {
     page = p;
   }
