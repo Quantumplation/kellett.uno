@@ -1,5 +1,17 @@
 <script lang="ts">
+import { createEventDispatcher } from 'svelte';
 let pressed = false;
+
+const dispatcher = createEventDispatcher();
+
+function clickStart() {
+  pressed = true;
+}
+
+function clickEnd() {
+  pressed = false;
+  dispatcher('click');
+}
 </script>
 
 <style type="text/scss">
@@ -40,10 +52,10 @@ let pressed = false;
 <div
   class="button"
   class:pressed
-  on:touchstart={() => pressed = true}
-  on:mousedown={() => pressed = true}
-  on:touchend={() => pressed = false}
-  on:mouseup={() => pressed = false}
+  on:touchstart={clickStart}
+  on:mousedown={clickStart}
+  on:touchend={clickEnd}
+  on:mouseup={clickEnd}
 >
   <slot/>
 </div>
