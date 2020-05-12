@@ -58,6 +58,7 @@ function navigateTo(p: string) {
     background-color: white;
     color: black;
     width: 30%;
+    min-width: 200px;
     display: flex;
     flex-direction: column;
     align-items: center;
