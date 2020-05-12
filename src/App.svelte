@@ -1,9 +1,15 @@
 <script lang="ts">
 
-  import Button from './Components/button.svelte';
+  import Home from './Home.svelte';
+  import Create from './Create.svelte';
+  import Join from './Join.svelte';
+  import Game from './Game.svelte';
 
-  let createClicked = false;
-  let joinClicked = false;
+  let page = 'create';
+  function navigate(p: string) {
+    page = p;
+  }
+
 
 </script>
 
@@ -17,51 +23,14 @@
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
   }
-
-  .center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100vh;
-
-    h1 {
-      font-size: 10vw;
-    }
-    .red {
-      color: $unoRed;
-    }
-    .blue {
-      color: $unoBlue;
-    }
-    .green {
-      color: $unoGreen;
-    }
-    .yellow {
-      color: $unoYellow;
-    }
-  }
-
-  .buttons {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    bottom: 10%;
-    height: 25%;
-    justify-content: space-around;
-  }
 </style>
 
-<div class="center">
-  <h1 class="red">    ke</h1>
-  <h1 class="blue">   lle</h1>
-  <h1 class="green">  tt.</h1>
-  <h1 class="yellow ">uno</h1>
-</div>
-
-<div class="buttons">
-  <Button>Create</Button>
-  <Button>Join</Button>
-</div>
+{#if page === 'home'}
+<Home {navigate} />
+{:else if page === 'create'}
+<Create {navigate} />
+{:else if page === 'join'}
+<Join {navigate} />
+{:else if page === 'game'}
+<Game {navigate} />
+{/if}
