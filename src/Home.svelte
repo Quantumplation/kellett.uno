@@ -1,6 +1,6 @@
 <script lang="ts">
   import Button from './Components/button.svelte';
-  export let navigate;
+  export let navigate: any;
 </script>
 
 <style type="text/scss">
