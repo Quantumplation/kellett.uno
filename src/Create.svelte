@@ -7,7 +7,7 @@ let unselectable = true;
 let playerCount = 2;
 
 async function loadCode() {
-    if(true) {
+    if(false) {
         return { code: 'ABC123' };
     } else {
         const resp = await fetch('/api/create-game');
