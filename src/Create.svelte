@@ -1,11 +1,13 @@
 <script lang="ts">
+import Button from './Components/button.svelte';
 export let navigate: (p: string) => void;
 
 let pressed = false;
 let unselectable = true;
+let playerCount = 2;
 
 async function loadCode() {
-    if(window.location.hostname === 'localhost') {
+    if(true) {
         return { code: 'ABC123' };
     } else {
         const resp = await fetch('/api/create-game');
@@ -182,7 +184,8 @@ function navigateTo(p: string) {
         </div>
         <div class="row waiting">
                 <img alt="Waiting..." src="images/reverse.png" />
-                <span>Waiting...</span>
+                <span>{playerCount} player{playerCount > 1 ? 's' : ''} waiting...</span>
         </div>
+        <Button disabled={playerCount <= 1} on:click={navigateTo('game')}>Start</Button>
     </div>
 </div>

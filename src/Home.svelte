@@ -33,11 +33,14 @@
     width: 100%;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    @media screen and (max-height: 570px) {
+      flex-direction: row;
+    }
     align-items: center;
     position: absolute;
     bottom: 10%;
     height: 25%;
-    justify-content: space-around;
   }
 </style>
 
