@@ -1,4 +1,5 @@
 <script lang="ts">
+import shortid from 'shortid';
 import Button from './Components/button.svelte';
 export let navigate: (p: string) => void;
 
@@ -6,16 +7,13 @@ let pressed = false;
 let unselectable = true;
 let playerCount = 2;
 
-async function loadCode() {
-    if(false) {
-        return { code: 'ABC123' };
-    } else {
-        const resp = await fetch('/api/create-game');
-        return { code: (await resp.json()).code };
-    }
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+=');
+
+function newId() {
+    return shortid.generate();
 }
 
-let codeP = loadCode();
+let gameId = newId();
 
 async function clickStart() {
     pressed = true;
@@ -28,7 +26,7 @@ async function clickStart() {
     textArea.style.outline = 'none';
     textArea.style.boxShadow = 'none';
     textArea.style.background = 'transparent';
-    textArea.value = (await codeP).code;
+    textArea.value = gameId;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -164,23 +162,18 @@ function navigateTo(p: string) {
         </ul>
         <div class="row code">
             <span>Game Code:</span>
-            {#await codeP}
-                <span id="code" class="loading">Loading...</span>
-            {:then codeR }
-                <span
-                    id="code"
-                    class="success"
-                    class:pressed
-                    class:unselectable
-                    on:touchstart={clickStart}
-                    on:mousedown={clickStart}
-                    on:touchend={clickEnd}
-                    on:mouseup={clickEnd}>
-                    {codeR.code}
-                </span>
-            {:catch}
-                <span id="code" class="error">Oops</span>
-            {/await}
+            
+            <span
+                id="code"
+                class="success"
+                class:pressed
+                class:unselectable
+                on:touchstart={clickStart}
+                on:mousedown={clickStart}
+                on:touchend={clickEnd}
+                on:mouseup={clickEnd}>
+                {gameId}
+            </span>
         </div>
         <div class="row waiting">
                 <img alt="Waiting..." src="images/reverse.png" />
