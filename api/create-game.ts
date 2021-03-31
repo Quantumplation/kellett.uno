@@ -1,8 +1,10 @@
-import { NowRequest, NowResponse } from '@now/node'
+import type { VercelRequest, VercelResponse } from '@vercel/node'
 import shortid from 'shortid';
 
 shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+=');
 
-export default (req: NowRequest, res: NowResponse) => {
+console.log('test');
+export default (req: VercelRequest, res: VercelResponse) => {
+  console.log('test2');
   res.json({ code: shortid.generate() });
 }
