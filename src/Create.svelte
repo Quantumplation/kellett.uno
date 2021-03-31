@@ -179,6 +179,6 @@ function navigateTo(p: string) {
                 <img alt="Waiting..." src="images/reverse.png" />
                 <span>{playerCount} player{playerCount > 1 ? 's' : ''} waiting...</span>
         </div>
-        <Button disabled={playerCount <= 1} on:click={navigateTo(`game/${gameId}`)}>Start</Button>
+        <Button disabled={playerCount <= 1} on:click={navigateTo(`game/${gameId}/host`)}>Start</Button>
     </div>
 </div>

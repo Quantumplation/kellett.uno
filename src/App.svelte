@@ -4,6 +4,7 @@
   import Create from './Create.svelte';
   import Join from './Join.svelte';
   import Game from './Game.svelte';
+  import GameDebug from './GameDebug.svelte';
 
   let page = '';
   navigate(window.location.pathname.substring(1) || '');
@@ -11,12 +12,19 @@
     if (p == 'home') {
       p = '';
     }
-    window.history.pushState(null, null, `/${p}`);
+    if (window.location.pathname != `/${p}`) {
+      window.history.pushState(null, null, `/${p}`);
+    }
     page = p;
   }
 
 
+
 </script>
+
+<svelte:window
+  on:popstate={(e) => page = document.location.pathname.substring(1)}
+/>
 
 <style type="text/scss">
   @import './Components/utilities.scss';
@@ -37,5 +45,9 @@
 {:else if page === 'join'}
 <Join {navigate} />
 {:else if page.startsWith('game')}
-<Game {navigate} />
+  {#if page.includes('debug')}
+    <GameDebug host={page.includes('/host')} />
+  {:else}
+    <Game {navigate} host={page.includes('/host')} />
+  {/if}
 {/if}
