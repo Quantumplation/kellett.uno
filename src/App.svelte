@@ -5,8 +5,13 @@
   import Join from './Join.svelte';
   import Game from './Game.svelte';
 
-  let page = 'home';
+  let page = '';
+  navigate(window.location.pathname.substring(1) || '');
   function navigate(p: string) {
+    if (p == 'home') {
+      p = '';
+    }
+    window.history.pushState(null, null, `/${p}`);
     page = p;
   }
 
@@ -25,12 +30,12 @@
   }
 </style>
 
-{#if page === 'home'}
+{#if page == '' || page == 'home'}
 <Home {navigate} />
 {:else if page === 'create'}
 <Create {navigate} />
 {:else if page === 'join'}
 <Join {navigate} />
-{:else if page === 'game'}
+{:else if page.startsWith('game')}
 <Game {navigate} />
 {/if}

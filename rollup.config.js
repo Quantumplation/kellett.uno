@@ -48,7 +48,7 @@ export default {
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
-		!production && serve({ port, contentBase: 'public' }),
+		!production && serve({ port, contentBase: 'public', historyApiFallback: true }),
 
 		// Watch the `public` directory and refresh the
 		// browser on changes when not in production
