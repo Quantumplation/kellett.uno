@@ -86,7 +86,11 @@ export function receiveEvent(event: GameEvent): GameError | null {
   let error: GameError;
   game.update(g => {
     if (event.id == null) {
-      event.id = (g?.lastEvent ?? -1) + 1;
+      if (!g) {
+        event.id = 0;
+      } else {
+        event.id = g.lastEvent + 1;
+      }
     }
     let goe = update(g, event);
     if (isError(goe)) {
