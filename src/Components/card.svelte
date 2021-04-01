@@ -6,6 +6,9 @@ export let card: Card;
 
 let Symbol;
 function getSymbol() {
+  if (card == null) {
+    return null;
+  }
   if (card.type === 'reverse') {
     return symbols.Reverse;
   }
@@ -42,6 +45,9 @@ function getSymbol() {
 }
 
 $: Symbol = getSymbol();
+let color = card ? card.color : 'none';
+let value = card ? card.type : 'none';
+
 
 </script>
 
@@ -71,8 +77,8 @@ $: Symbol = getSymbol();
 
 <svg class="card" viewBox="0 0 112 178">
   <rect width="100%" height="100%" fill="white" rx="10" />
-  <rect x="10" y="10" width="92" height="158" class="{card.color}" rx="5" />
-  <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{card.color}" stroke="white" stroke-width=5/>
+  <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
+  <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{color}" stroke="white" stroke-width=5/>
   <svelte:component this={Symbol} viewBox="0 0 72 80" x="16" y="12" width="34" height="34" />
   <g transform="rotate(180 48 84)">
     <svelte:component this={Symbol} viewBox="0 0 72 80" width="34" height="34"/>

@@ -47,9 +47,5 @@ function gameId() {
 {:else if page === 'join'}
 <Join {navigate} />
 {:else if page.startsWith('game')}
-  {#if page.includes('debug')}
-    <GameDebug host={page.includes('/host')} gameId={gameId()} />
-  {:else}
-    <Game {navigate} host={page.includes('/host')} />
-  {/if}
+  <Game {navigate} />
 {/if}

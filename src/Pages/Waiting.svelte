@@ -3,14 +3,13 @@ import shortid from 'shortid';
 import App from '../App.svelte';
 import Button from '../Components/button.svelte';
 import { newDeck, randomPlayer } from '../Model/model';
-import { connect, emitEvent, startListening } from '../Model/peers';
+import { emitEvent } from '../Model/peers';
 import { game } from '../store';
 export let navigate: (p: string) => void;
 export let host = false;
 
 let pressed = false;
 let unselectable = true;
-let debug = true;
 
 let playerCount;
 $: {
@@ -64,7 +63,7 @@ function startGame() {
         emitEvent({ type: 'draw', player: player.name, cards: hand });
     }
 
-    navigate(`game/${$game.id}/host${debug ? '/debug' : ''}`);
+    navigate(`game/${$game.id}/host`);
 }
 </script>
 <style type="text/scss">
@@ -169,7 +168,7 @@ function startGame() {
             <ul class="row breadcrumbs">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <li><a on:click={navigateTo('home')}>Home</a></li>
-                <li>{host ? "Create" : "Waiting"}</li>
+                <li>{"Waiting"}</li>
             </ul>
             <div class="row code">
                 <span>Game Code:</span>
@@ -189,9 +188,6 @@ function startGame() {
             <div class="row waiting">
                     <img alt="Waiting..." src="/images/reverse.png" />
                     <span>{playerCount} other player{playerCount != 1 ? 's' : ''} waiting...</span>
-            </div>
-            <div class="row debug">
-                <input type="checkbox" bind:checked={debug} /> <span>Debug</span>
             </div>
             {#if host}
                 <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>

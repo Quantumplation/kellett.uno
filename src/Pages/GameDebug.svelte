@@ -2,7 +2,6 @@
   import App from '../App.svelte';
 import Button from '../Components/button.svelte';
 import { game } from '../store';
-  export let gameId;
   export let host = false;
 </script>
 <style>
@@ -23,7 +22,7 @@ import { game } from '../store';
 
 <div class="container">
   <span>
-    Game: {gameId}
+    Game: {$game.id}
   </span>
   <span>
     Host: {host}
