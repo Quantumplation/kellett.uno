@@ -73,8 +73,10 @@ export function emitEvent(event: GameEvent): GameError | null {
     console.log('[CLNT] Sending: ', event);
     host.send(event);
   } else if(clients) {
+    console.log('test');
     let goe = receiveEvent(event);
     if (isError(goe)) {
+      console.log('[GAME] Error applying state: ', goe);
       return goe;
     }
   }

@@ -14,7 +14,7 @@ export type Player = { name: string, hand: Hand };
 export type GameEvent =
   | { id?: number, type: 'create', gameId: string, playerCount: number }
   | { id?: number, type: 'join', player: string }
-  | { id?: number, type: 'start' }
+  | { id?: number, type: 'start', deck: Card[], startPlayer: string }
   | { id?: number, type: 'draw', player: string, cards: Card[] }
   | { id?: number, type: 'play', player: string, card: Card };
 
@@ -93,4 +93,9 @@ export function newDeck(): Deck {
   }
 
   return shuffle(deck);
+}
+
+export function randomPlayer(players: Player[]) {
+  let idx = rand(0, players.length);
+  return players[idx];
 }

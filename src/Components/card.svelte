@@ -1,22 +1,18 @@
 <script lang="ts">
-type CardType = 'normal' | 'skip' | 'reverse' | 'draw';
-type NormalColor = 'red' | 'blue' | 'green' | 'yellow';
-type Color = NormalColor | 'wild';
+import type { Card } from '../Model/model';
 import * as symbols from '../assets/symbols';
 
-export let cardType: CardType;
-export let value: number;
-export let color: Color;
+export let card: Card;
 
 let Symbol;
 function getSymbol() {
-  if (cardType === 'reverse') {
+  if (card.type === 'reverse') {
     return symbols.Reverse;
   }
-  if (cardType !== 'normal' || color === 'wild') {
+  if (card.type !== 'normal' ) {
     return symbols.IDK;
   }
-  switch (value) {
+  switch (card.value) {
     case 0:
       return symbols.Zero;
     case 1:
@@ -72,8 +68,8 @@ $: Symbol = getSymbol();
 
 <svg class="card" viewBox="0 0 112 178">
   <rect width="100%" height="100%" fill="white" rx="10" />
-  <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
-  <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{color}" stroke="white" stroke-width=5/>
+  <rect x="10" y="10" width="92" height="158" class="{card.color}" rx="5" />
+  <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{card.color}" stroke="white" stroke-width=5/>
   <svelte:component this={Symbol} viewBox="0 0 72 80" x="16" y="12" width="34" height="34" />
   <g transform="rotate(180 48 84)">
     <svelte:component this={Symbol} viewBox="0 0 72 80" width="34" height="34"/>

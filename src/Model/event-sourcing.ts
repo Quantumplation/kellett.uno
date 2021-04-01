@@ -52,7 +52,7 @@ export function update(game: Game, event: GameEvent): Game | GameError {
         return { err: true, type: 'already-started' };
       }
 
-      nextGame = startGame(game);
+      nextGame = startGame(game, event);
     } break;
     case 'draw': {
       if(!game) {
@@ -101,12 +101,11 @@ export function joinGame(game: Game, playerName: string): Game {
   return game;
 }
 
-export function startGame(game: Game): Game {
+export function startGame(game: Game, event: { deck: Card[], startPlayer: string }): Game {
   game = clone(game);
   game.playerCount = game.players.length;
-  game.deck = newDeck();
-  let player = rand(0, game.playerCount);
-  game.currentPlayer = game.players[player].name;
+  game.deck = event.deck;
+  game.currentPlayer = event.startPlayer;
   return game;
 }
 
@@ -114,7 +113,7 @@ export function draw(game: Game, event: { player: string, cards: Card[] }): Game
   game = clone(game);
   let player = game.players.find(p => p.name == event.player);
   for(var card of event.cards) {
-    let next = game.deck.pop();
+    let next = game.deck.shift();
     if (!cardsEqual(card, next)) {
       return { err: true, type: 'invalid-draw', expected: card, actual: next };
     }

@@ -2,6 +2,7 @@
 import shortid from 'shortid';
 import App from '../App.svelte';
 import Button from '../Components/button.svelte';
+import { newDeck, randomPlayer } from '../Model/model';
 import { connect, emitEvent, startListening } from '../Model/peers';
 import { game } from '../store';
 export let navigate: (p: string) => void;
@@ -55,8 +56,14 @@ function navigateTo(p: string) {
 }
 
 function startGame() {
-    emitEvent({ id: null, type: 'start' });
-    console.log('Navigating');
+    emitEvent({ type: 'start', deck: newDeck(), startPlayer: randomPlayer($game.players).name });
+    
+    // Draw a hand for each player
+    for(const player of $game.players) {
+        let hand = $game.deck.slice(0, 7);
+        emitEvent({ type: 'draw', player: player.name, cards: hand });
+    }
+
     navigate(`game/${$game.id}/host${debug ? '/debug' : ''}`);
 }
 </script>
