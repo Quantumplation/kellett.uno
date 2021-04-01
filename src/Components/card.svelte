@@ -9,7 +9,10 @@ function getSymbol() {
   if (card.type === 'reverse') {
     return symbols.Reverse;
   }
-  if (card.type !== 'normal' ) {
+  if (card.type === 'skip') {
+    return symbols.Skip;
+  }
+  if (card.type === 'draw' || card.color === 'wild') {
     return symbols.IDK;
   }
   switch (card.value) {
