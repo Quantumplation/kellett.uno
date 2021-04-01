@@ -100,3 +100,7 @@ export function randomPlayer(players: Player[]) {
   let idx = rand(0, players.length);
   return players[idx];
 }
+
+export function isClickable(game: Game, player: string, owner: string, card: Card) {
+  return game && player == owner && owner == game.currentPlayer;
+}

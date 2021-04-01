@@ -1,11 +1,15 @@
 <script lang="ts">
 import Card from '../Components/card.svelte';
 import Waiting from './Waiting.svelte';
-import { game } from '../store';
+import { game, player } from '../store';
 import GameDebug from './GameDebug.svelte';
+import { isClickable } from '../Model/model';
 
 export let navigate: (p) => void;
 let debug = false;
+
+$: currentPlayer = $player && $player.toString();
+$: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : null;
 
 </script>
 
@@ -44,18 +48,14 @@ let debug = false;
     <span>
       Pile
       <div>
-        {#if $game.pile.length}
-          <Card card={$game.pile[$game.pile.length - 1]} />
-        {:else}
-          <Card card={null} />
-        {/if}
+        <Card card={topCard} />
       </div>
     </span>
     {#each $game.players as player}
       <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
       <div class="row">
         {#each player.hand as card,i (`${card.color}:${card.type}:${card['value'] || card['amount']}:${i}`)}
-          <Card {card} />
+          <Card {card} clickable={isClickable($game, currentPlayer, player.name, card)} />
         {/each}
       </div>
     {/each}

@@ -2,12 +2,13 @@
 import type { Card } from '../Model/model';
 import * as symbols from '../assets/symbols';
 import { emitEvent } from '../Model/peers';
-import { player } from '../store';
+import { game, player } from '../store';
 
 export let card: Card;
+export let clickable = false;
 
 let Symbol;
-function getSymbol() {
+function getSymbol(card: Card) {
   if (card == null) {
     return null;
   }
@@ -46,18 +47,23 @@ function getSymbol() {
   }
 }
 
-$: Symbol = getSymbol();
-let color = card ? card.color : 'none';
-let value = card ? card.type : 'none';
+$: Symbol = getSymbol(card);
+$: color = card ? card.color : 'none';
+$: value = card ? card.type : 'none';
 
 function click() {
-  emitEvent({ type: 'play', player: $player.toString(), card });
+  if (card != null && clickable) {
+    emitEvent({ type: 'play', player: $player.toString(), card });
+  }
 }
 </script>
 
 <style type="text/scss">
   @import 'utilities.scss';
 
+  div {
+    display: inline-block;
+  }
   svg {
     & rect, ellipse {
       &.red {
@@ -77,9 +83,12 @@ function click() {
   .card {
     width: 100px;
   }
+  .clickable {
+    cursor: pointer;
+  }
 </style>
 
-<div on:click={click}>
+<div class:clickable on:click={click}>
 <svg class="card" viewBox="0 0 112 178">
   <rect width="100%" height="100%" fill="white" rx="10" />
   <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
