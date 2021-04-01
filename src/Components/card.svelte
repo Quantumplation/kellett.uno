@@ -61,9 +61,6 @@ function click() {
 <style type="text/scss">
   @import 'utilities.scss';
 
-  div {
-    display: inline-block;
-  }
   svg {
     & rect, ellipse {
       &.red {
@@ -83,12 +80,15 @@ function click() {
   .card {
     width: 100px;
   }
+  .container {
+    display: inline-block;
+  }
   .clickable {
     cursor: pointer;
   }
 </style>
 
-<div class:clickable on:click={click}>
+<div class="container" class:clickable on:click={click}>
 <svg class="card" viewBox="0 0 112 178">
   <rect width="100%" height="100%" fill="white" rx="10" />
   <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
