@@ -1,4 +1,5 @@
 import svelte from 'rollup-plugin-svelte';
+import svelteSVG from 'rollup-plugin-svelte-svg';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import livereload from 'rollup-plugin-livereload';
@@ -30,6 +31,8 @@ export default {
 			},
       preprocess: sveltePreprocess({ sourceMap: !production })
 		}),
+
+		svelteSVG(),
 
 		// If you have external dependencies installed from
 		// npm, you'll most likely need these plugins. In

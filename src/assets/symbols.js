@@ -1,0 +1,11 @@
+export { default as Zero } from './0.svg';
+export { default as One } from './1.svg';
+export { default as Two } from './2.svg';
+export { default as Three } from './3.svg';
+export { default as Four } from './4.svg';
+export { default as Five } from './5.svg';
+export { default as Six } from './6.svg';
+export { default as Seven } from './7.svg';
+export { default as Eight } from './8.svg';
+export { default as Nine } from './9.svg';
+export { default as IDK } from './idk.svg';
