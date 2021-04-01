@@ -1,19 +1,25 @@
 <script lang="ts">
 import shortid from 'shortid';
 import Button from './Components/button.svelte';
+import { connect, emitEvent, startListening } from './Model/peers';
+import { game } from './store';
 export let navigate: (p: string) => void;
 
 let pressed = false;
 let unselectable = true;
-let playerCount = 2;
+let debug = true;
 
-shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+=');
+$: playerCount = $game.players.length - 1;
 
-function newId() {
-    return shortid.generate();
+shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_');
+
+function newGame() {
+    let id = 'kellett_uno_test'; //shortid.generate();
+    emitEvent({ type: 'create', gameId: id, playerCount: 4 });
+    emitEvent({ type: 'join', player: 'Host' });
+    startListening(id);
 }
-
-let gameId = newId();
+newGame();
 
 async function clickStart() {
     pressed = true;
@@ -26,7 +32,7 @@ async function clickStart() {
     textArea.style.outline = 'none';
     textArea.style.boxShadow = 'none';
     textArea.style.background = 'transparent';
-    textArea.value = gameId;
+    textArea.value = $game.id;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();
@@ -49,6 +55,11 @@ function navigateTo(p: string) {
         navigate(p);
         return false;
     }
+}
+
+function startGame() {
+    emitEvent({ id: null, type: 'start' });
+    navigateTo(`game/${$game.id}/host${debug ? '/debug' : ''}`);
 }
 </script>
 <style type="text/scss">
@@ -117,12 +128,6 @@ function navigateTo(p: string) {
         border-radius: 3px;
         color: white;
     }
-    #code.loading {
-        background-color: #888;
-    }
-    #code.error {
-        background-color: $unoRed;
-    }
     #code.success {
         cursor: pointer;
         background-color: $unoBlue;
@@ -172,13 +177,16 @@ function navigateTo(p: string) {
                 on:mousedown={clickStart}
                 on:touchend={clickEnd}
                 on:mouseup={clickEnd}>
-                {gameId}
+                {$game.id}
             </span>
         </div>
         <div class="row waiting">
                 <img alt="Waiting..." src="images/reverse.png" />
-                <span>{playerCount} player{playerCount > 1 ? 's' : ''} waiting...</span>
+                <span>{playerCount} other player{playerCount != 1 ? 's' : ''} waiting...</span>
         </div>
-        <Button disabled={playerCount <= 1} on:click={navigateTo(`game/${gameId}/host`)}>Start</Button>
+        <div class="row debug">
+            <input type="checkbox" bind:checked={debug} /> <span>Debug</span>
+        </div>
+        <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>
     </div>
 </div>

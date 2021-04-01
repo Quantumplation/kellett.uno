@@ -1,5 +1,9 @@
 <script lang="ts">
 import Button from './Components/button.svelte';
+import { isError } from './Model/event-sourcing';
+import { rand } from './Model/model';
+import { connect, emitEvent } from './Model/peers';
+import { game } from './store';
 export let navigate: (p: string) => void;
 
 let gameCode = "";
@@ -12,6 +16,24 @@ function navigateTo(p: string) {
         return false;
     }
 }
+
+connect('kellett_uno_test');
+setTimeout(function join() {
+    game.update(u => {
+        if (!u) {
+            // Retry in one second
+            console.log('Retrying...');
+            setTimeout(join, 1000);
+            return u;
+        }
+        let goe = emitEvent({ type: 'join', player: 'Player ' + rand(0, 100000) });
+        if (isError(goe)) {
+            console.log('?? ', goe);
+        }
+        return u;
+    });
+}, 1000);
+
 </script>
 <style type="text/scss">
 

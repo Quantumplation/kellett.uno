@@ -1,4 +1,5 @@
 <script lang="ts">
+  export let gameId;
   export let host = false;
 </script>
 <style>
@@ -11,6 +12,9 @@
 </style>
 
 <div class="container">
+  <span>
+    Game: {gameId}
+  </span>
   <span>
     Host: {host}
   </span>

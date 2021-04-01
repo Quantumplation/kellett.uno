@@ -5,7 +5,6 @@ const digits = new Array(10).fill(null).map((_, i) => i);
 
 export let navigate: (p) => void;
 export let host = false;
-export let debug = true;
 
 </script>
 

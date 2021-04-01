@@ -18,7 +18,9 @@
     page = p;
   }
 
-
+function gameId() {
+  return page.split('/')[1];
+}
 
 </script>
 
@@ -46,7 +48,7 @@
 <Join {navigate} />
 {:else if page.startsWith('game')}
   {#if page.includes('debug')}
-    <GameDebug host={page.includes('/host')} />
+    <GameDebug host={page.includes('/host')} gameId={gameId()} />
   {:else}
     <Game {navigate} host={page.includes('/host')} />
   {/if}
