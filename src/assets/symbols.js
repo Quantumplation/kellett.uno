@@ -8,4 +8,5 @@ export { default as Six } from './6.svg';
 export { default as Seven } from './7.svg';
 export { default as Eight } from './8.svg';
 export { default as Nine } from './9.svg';
+export { default as Reverse } from './reverse.svg';
 export { default as IDK } from './idk.svg';

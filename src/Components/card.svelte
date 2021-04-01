@@ -10,7 +10,10 @@ export let color: Color;
 
 let Symbol;
 function getSymbol() {
-  if (cardType !== 'normal') {
+  if (cardType === 'reverse') {
+    return symbols.Reverse;
+  }
+  if (cardType !== 'normal' || color === 'wild') {
     return symbols.IDK;
   }
   switch (value) {

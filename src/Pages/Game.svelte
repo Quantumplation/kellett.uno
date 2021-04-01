@@ -17,9 +17,10 @@ export let host = false;
   <Waiting {navigate} />
 {:else}
   {#each colors as color}
-    {#each digits as digit }
+    {#each digits as digit}
       <Card cardType="normal" value={digit} {color} />
     {/each}
+    <Card cardType="reverse" {color} />      
     <br/>
   {/each}
 {/if}
