@@ -18,33 +18,16 @@ function getSymbol(card: Card) {
   if (card.type === 'skip') {
     return symbols.Skip;
   }
-  if (card.type === 'draw' || card.color === 'wild') {
+  if (card.color === 'wild') {
     return symbols.IDK;
   }
-  switch (card.value) {
-    case 0:
-      return symbols.Zero;
-    case 1:
-      return symbols.One;
-    case 2:
-      return symbols.Two;
-    case 3:
-      return symbols.Three;
-    case 4:
-      return symbols.Four;
-    case 5:
-      return symbols.Five;
-    case 6:
-      return symbols.Six;
-    case 7:
-      return symbols.Seven;
-    case 8:
-      return symbols.Eight;
-    case 9:
-      return symbols.Nine;
-    default:
-      return symbols.IDK;
+  if (card.type === 'draw') {
+    if (card.amount === 2) {
+      return symbols.Plus2;
+    }
+    return symbols.Plus4;
   }
+  return symbols.digits[card.value] || symbols.IDK;
 }
 
 $: Symbol = getSymbol(card);
@@ -93,10 +76,10 @@ function click() {
   <rect width="100%" height="100%" fill="white" rx="10" />
   <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
   <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{color}" stroke="white" stroke-width=5/>
-  <svelte:component this={Symbol} viewBox="0 0 72 80" x="16" y="12" width="34" height="34" />
-  <g transform="rotate(180 48 84)">
-    <svelte:component this={Symbol} viewBox="0 0 72 80" width="34" height="34"/>
+  <svelte:component this={Symbol} x="12" y="10" width="28" height="38" />
+  <g transform="rotate(180 50 84)">
+    <svelte:component this={Symbol} width="28" height="38"/>
   </g>
-  <svelte:component this={Symbol} viewBox="0 0 72 80" x="32" y="44" width="84" height="84" />
+  <svelte:component this={Symbol} x="26" y="48" width="60" height="80" />
 </svg>
 </div>
