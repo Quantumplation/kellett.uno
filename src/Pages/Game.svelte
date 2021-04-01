@@ -44,7 +44,11 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
   {:else if !$game.currentPlayer}
     <Waiting {navigate} />
   {:else}
-    <span>Deck: {$game.deck.length}</span>
+    <span>Deck: {$game.deck.length}
+      <div>
+        <Card card={null} draw={true} clickable={$game.currentPlayer == currentPlayer} />
+      </div>
+    </span>
     <span>
       Pile
       <div>
@@ -54,7 +58,7 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
     {#each $game.players as player}
       <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
       <div class="row">
-        {#each player.hand as card,i (`${card.color}:${card.type}:${card['value'] || card['amount']}:${i}`)}
+        {#each player.hand as card (card.id)}
           <Card {card} clickable={isClickable($game, currentPlayer, player.name, card)} />
         {/each}
       </div>

@@ -170,7 +170,6 @@ export function play(game: Game, event: { player: string, card: Card }): {game: 
     } break;
   }
   player.hand = player.hand.filter(c => !cardsEqual(c, event.card));
-  events.push({ type: 'draw', player: player.name, count: 1 });
   game.pile.push(event.card);
   game.currentPlayer = game.players[nextIdx].name;
   return { game, events };

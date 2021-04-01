@@ -6,6 +6,7 @@ import { game, player } from '../store';
 
 export let card: Card;
 export let clickable = false;
+export let draw = false;
 
 let Symbol;
 function getSymbol(card: Card) {
@@ -34,7 +35,12 @@ $: Symbol = getSymbol(card);
 $: color = card ? card.color : 'none';
 $: value = card ? card.type : 'none';
 
+let choosingColor = card && card.color == 'wild';
+
 function click() {
+  if (draw) {
+    emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
+  }
   if (card != null && clickable) {
     emitEvent({ type: 'play', player: $player.toString(), card });
   }

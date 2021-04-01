@@ -1,9 +1,9 @@
 export type Color = 'red' | 'green' | 'blue' | 'yellow' | 'wild';
 export type Card = 
-  | { type: 'normal', color: Color, value: number }
-  | { type: 'reverse', color: Color }
-  | { type: 'skip', color: Color }
-  | { type: 'draw', color: Color, amount: number };
+  | { id: number, type: 'normal', color: Color, value: number }
+  | { id: number, type: 'reverse', color: Color }
+  | { id: number, type: 'skip', color: Color }
+  | { id: number, type: 'draw', color: Color, amount: number };
 
 export type Deck = Card[];
 export type Pile = Card[];
@@ -72,25 +72,26 @@ export function newDeck(): Deck {
   // An uno deck has 108 cards
   //  - four 0's, one of each color
   //  - eighteen 1-9's, two of each color/number
+  let id = 0;
   for(const color of ['red', 'yellow', 'blue', 'green'] as const) {
     for(let value = 0; value < 10; value++) {
-      deck.push({ type: 'normal', color, value });
+      deck.push({ id: id++, type: 'normal', color, value });
       if(value != 0) {
-        deck.push({ type: 'normal', color, value });
+        deck.push({ id: id++, type: 'normal', color, value });
       }
     }
 
     //- 24 action cards, two of each per color
     for(let i = 0; i < 2; i++) {
-      deck.push({ type: 'skip', color });
-      deck.push({ type: 'reverse', color });
-      deck.push({ type: 'draw', color, amount: 2 });
+      deck.push({ id: id++, type: 'skip', color });
+      deck.push({ id: id++, type: 'reverse', color });
+      deck.push({ id: id++, type: 'draw', color, amount: 2 });
     }
   }
   // - Four wild cards, and four wild draw fours
   for(let i = 0; i < 4; i++) {
-    deck.push({ type: 'normal', color: 'wild', value: 0 });
-    deck.push({ type: 'draw', color: 'wild', amount: 4 });
+    deck.push({ id: id++, type: 'normal', color: 'wild', value: 0 });
+    deck.push({ id: id++, type: 'draw', color: 'wild', amount: 4 });
   }
 
   return shuffle(deck);
