@@ -15,7 +15,7 @@ export type GameEvent =
   | { id?: number, type: 'create', gameId: string, playerCount: number }
   | { id?: number, type: 'join', player: string }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
-  | { id?: number, type: 'draw', player: string, cards: Card[] }
+  | { id?: number, type: 'draw', player: string, count: number }
   | { id?: number, type: 'play', player: string, card: Card };
 
 export type Game = {
@@ -26,7 +26,8 @@ export type Game = {
   players: Player[],
   currentPlayer: string,
   deck: Deck,
-  pile: Pile
+  pile: Pile,
+  direction: number,
 };
 
 export function rand(min: number, max: number) {

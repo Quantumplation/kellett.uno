@@ -17,6 +17,13 @@ let debug = false;
     display: flex;
     flex-direction: column;
   }
+  .row {
+    display: flex;
+    flex-direction: row;
+  }
+  .currentPlayer {
+    color: red;
+  }
 </style>
 
 <span>Debug: </span>
@@ -45,9 +52,9 @@ let debug = false;
       </div>
     </span>
     {#each $game.players as player}
-      <span>{player.name}</span>
-      <div>
-        {#each player.hand as card}
+      <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
+      <div class="row">
+        {#each player.hand as card,i (`${card.color}:${card.type}:${card['value'] || card['amount']}:${i}`)}
           <Card {card} />
         {/each}
       </div>

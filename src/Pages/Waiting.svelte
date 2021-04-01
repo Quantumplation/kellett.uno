@@ -59,8 +59,7 @@ function startGame() {
     
     // Draw a hand for each player
     for(const player of $game.players) {
-        let hand = $game.deck.slice(0, 7);
-        emitEvent({ type: 'draw', player: player.name, cards: hand });
+        emitEvent({ type: 'draw', player: player.name, count: 7 });
     }
 
     navigate(`game/${$game.id}/host`);

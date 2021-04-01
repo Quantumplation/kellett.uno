@@ -58,9 +58,13 @@ export function connect(id: string) {
       host = conn;
       conn.on('data', (data) => {
         console.log('[CLNT] Received: ', data);
-        let goe = receiveEvent(data);
-        if (isError(goe)) {
-          console.log('[CLNT] Error applying locally: ', goe);
+        if (isError(data)) {
+          console.log('[CLNT] Error from server: ', data);
+        } else {
+          let goe = receiveEvent(data);
+          if (isError(goe)) {
+            console.log('[CLNT] Error applying locally: ', goe);
+          }
         }
       });
     })
@@ -73,20 +77,24 @@ export function emitEvent(event: GameEvent): GameError | null {
     console.log('[CLNT] Sending: ', event);
     host.send(event);
   } else if(clients) {
-    console.log('test');
     let goe = receiveEvent(event);
     if (isError(goe)) {
       console.log('[GAME] Error applying state: ', goe);
       return goe;
+    } else if(goe && goe.length > 0) {
+      for(const evt of goe) {
+        emitEvent(evt);
+      }
     }
   }
 
   return null;
 }
 
-export function receiveEvent(event: GameEvent): GameError | null {
+export function receiveEvent(event: GameEvent): GameError | GameEvent[] {
   // Try to apply the event locally first
   let error: GameError;
+  let events: GameEvent[];
   game.update(g => {
     if (event.id == null) {
       if (!g) {
@@ -102,11 +110,15 @@ export function receiveEvent(event: GameEvent): GameError | null {
     }
 
     console.log('[GAME] Update: ', goe);
-    return goe;
+    if(goe.events && goe.events.length) {
+      console.log('[GAME] Additional Events: ', goe.events);
+      events = goe.events;
+    }
+    return goe.game;
   });
   if(error) {
     return error;
   }
 
-  return null;
+  return events;
 }

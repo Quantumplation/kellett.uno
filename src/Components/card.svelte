@@ -1,6 +1,8 @@
 <script lang="ts">
 import type { Card } from '../Model/model';
 import * as symbols from '../assets/symbols';
+import { emitEvent } from '../Model/peers';
+import { player } from '../store';
 
 export let card: Card;
 
@@ -48,7 +50,9 @@ $: Symbol = getSymbol();
 let color = card ? card.color : 'none';
 let value = card ? card.type : 'none';
 
-
+function click() {
+  emitEvent({ type: 'play', player: $player.toString(), card });
+}
 </script>
 
 <style type="text/scss">
@@ -75,6 +79,7 @@ let value = card ? card.type : 'none';
   }
 </style>
 
+<div on:click={click}>
 <svg class="card" viewBox="0 0 112 178">
   <rect width="100%" height="100%" fill="white" rx="10" />
   <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
@@ -85,3 +90,4 @@ let value = card ? card.type : 'none';
   </g>
   <svelte:component this={Symbol} viewBox="0 0 72 80" x="32" y="44" width="84" height="84" />
 </svg>
+</div>

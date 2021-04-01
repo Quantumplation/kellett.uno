@@ -3,7 +3,7 @@ import Button from '../Components/button.svelte';
 import { isError } from '../Model/event-sourcing';
 import { rand } from '../Model/model';
 import { connect, emitEvent } from '../Model/peers';
-import { game } from '../store';
+import { game, player } from '../store';
 export let navigate: (p: string) => void;
 
 let gameCode = "";
@@ -29,7 +29,9 @@ function join() {
                 setTimeout(join, 1000);
                 return u;
             }
-            let goe = emitEvent({ type: 'join', player: 'Player ' + rand(0, 100000) });
+            let playerName = 'Player ' + rand(0, 100000);
+            let goe = emitEvent({ type: 'join', player: playerName });
+            player.set(playerName);
             if (isError(goe)) {
                 console.log('?? ', goe);
             }
