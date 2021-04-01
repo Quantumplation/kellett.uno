@@ -1,10 +1,10 @@
 <script lang="ts">
 
-  import Home from './Home.svelte';
-  import Create from './Create.svelte';
-  import Join from './Join.svelte';
-  import Game from './Game.svelte';
-  import GameDebug from './GameDebug.svelte';
+  import Home from './Pages/Home.svelte';
+  import Create from './Pages/Create.svelte';
+  import Join from './Pages/Join.svelte';
+  import Game from './Pages/Game.svelte';
+  import GameDebug from './Pages/GameDebug.svelte';
 
   let page = '';
   navigate(window.location.pathname.substring(1) || '');

@@ -1,13 +1,13 @@
 <script lang="ts">
-import Button from './Components/button.svelte';
-import { isError } from './Model/event-sourcing';
-import { rand } from './Model/model';
-import { connect, emitEvent } from './Model/peers';
-import { game } from './store';
+import Button from '../Components/button.svelte';
+import { isError } from '../Model/event-sourcing';
+import { rand } from '../Model/model';
+import { connect, emitEvent } from '../Model/peers';
+import { game } from '../store';
 export let navigate: (p: string) => void;
 
 let gameCode = "";
-let joinDisabled = true;
+let joinDisabled = gameCode != null;
 $: joinDisabled = !gameCode;
 
 function navigateTo(p: string) {
@@ -17,27 +17,32 @@ function navigateTo(p: string) {
     }
 }
 
-connect('kellett_uno_test');
-setTimeout(function join() {
-    game.update(u => {
-        if (!u) {
-            // Retry in one second
-            console.log('Retrying...');
-            setTimeout(join, 1000);
+function join() {
+    connect(gameCode);
+
+    // TODO: do cleaner
+    setTimeout(function join() {
+        game.update(u => {
+            if (!u) {
+                // Retry in one second
+                console.log('Retrying...');
+                setTimeout(join, 1000);
+                return u;
+            }
+            let goe = emitEvent({ type: 'join', player: 'Player ' + rand(0, 100000) });
+            if (isError(goe)) {
+                console.log('?? ', goe);
+            }
+            navigate(`game/${u.id}`);
             return u;
-        }
-        let goe = emitEvent({ type: 'join', player: 'Player ' + rand(0, 100000) });
-        if (isError(goe)) {
-            console.log('?? ', goe);
-        }
-        return u;
-    });
-}, 1000);
+        });
+    }, 1000);
+}
 
 </script>
 <style type="text/scss">
 
-    @import './Components/utilities.scss';
+    @import '../Components/utilities.scss';
 
     .page {
         display: flex;
@@ -103,7 +108,7 @@ setTimeout(function join() {
             <input type="text" placeholder="Game Code" bind:value={gameCode} />
         </div>
         <div class="row join">
-            <Button disabled={joinDisabled}>Join</Button>
+            <Button disabled={joinDisabled} on:click={join}>Join</Button>
         </div>
     </div>
 </div>

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import Button from './Components/button.svelte';
+  import Button from '../Components/button.svelte';
   export let navigate: any;
 </script>
 
 <style type="text/scss">
-  @import './Components/utilities.scss';
+  @import '../Components/utilities.scss';
   .center {
     display: flex;
     align-items: center;

@@ -11,6 +11,7 @@ export function startListening(id: string) {
   peer.on('error', (err) => {
     console.log('[HOST] Network Err: ', err);
   });
+  // TODO: handle errors and disconnects
   peer.on('connection',(conn) => {
     conn.on('open', () => {
       console.log('[HOST] New connection, ', conn.peer);

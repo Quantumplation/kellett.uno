@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { game } from '../store';
   export let gameId;
   export let host = false;
 </script>
@@ -17,5 +18,8 @@
   </span>
   <span>
     Host: {host}
+  </span>
+  <span>
+    State: {#if $game == null} Unknown {:else if !$game.currentPlayer} Waiting {:else} Playing {/if} 
   </span>
 </div>

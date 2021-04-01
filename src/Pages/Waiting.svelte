@@ -1,25 +1,22 @@
 <script lang="ts">
 import shortid from 'shortid';
-import Button from './Components/button.svelte';
-import { connect, emitEvent, startListening } from './Model/peers';
-import { game } from './store';
+import App from '../App.svelte';
+import Button from '../Components/button.svelte';
+import { connect, emitEvent, startListening } from '../Model/peers';
+import { game } from '../store';
 export let navigate: (p: string) => void;
+export let host = false;
 
 let pressed = false;
 let unselectable = true;
 let debug = true;
 
-$: playerCount = $game.players.length - 1;
-
-shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_');
-
-function newGame() {
-    let id = 'kellett_uno_test'; //shortid.generate();
-    emitEvent({ type: 'create', gameId: id, playerCount: 4 });
-    emitEvent({ type: 'join', player: 'Host' });
-    startListening(id);
+let playerCount;
+$: {
+    if ($game) {
+        playerCount = $game.players.length - 1;
+    }
 }
-newGame();
 
 async function clickStart() {
     pressed = true;
@@ -59,12 +56,13 @@ function navigateTo(p: string) {
 
 function startGame() {
     emitEvent({ id: null, type: 'start' });
-    navigateTo(`game/${$game.id}/host${debug ? '/debug' : ''}`);
+    console.log('Navigating');
+    navigate(`game/${$game.id}/host${debug ? '/debug' : ''}`);
 }
 </script>
 <style type="text/scss">
 
-    @import './Components/utilities.scss';
+    @import '../Components/utilities.scss';
 
     .page {
         display: flex;
@@ -158,35 +156,41 @@ function startGame() {
     }
 </style>
 
-<div class="page">
-    <div class="form">
-        <ul class="row breadcrumbs">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <li><a on:click={navigateTo('home')}>Home</a></li>
-            <li>Create</li>
-        </ul>
-        <div class="row code">
-            <span>Game Code:</span>
-            
-            <span
-                id="code"
-                class="success"
-                class:pressed
-                class:unselectable
-                on:touchstart={clickStart}
-                on:mousedown={clickStart}
-                on:touchend={clickEnd}
-                on:mouseup={clickEnd}>
-                {$game.id}
-            </span>
+{#if $game}
+    <div class="page">
+        <div class="form">
+            <ul class="row breadcrumbs">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <li><a on:click={navigateTo('home')}>Home</a></li>
+                <li>{host ? "Create" : "Waiting"}</li>
+            </ul>
+            <div class="row code">
+                <span>Game Code:</span>
+                
+                <span
+                    id="code"
+                    class="success"
+                    class:pressed
+                    class:unselectable
+                    on:touchstart={clickStart}
+                    on:mousedown={clickStart}
+                    on:touchend={clickEnd}
+                    on:mouseup={clickEnd}>
+                    {$game.id}
+                </span>
+            </div>
+            <div class="row waiting">
+                    <img alt="Waiting..." src="/images/reverse.png" />
+                    <span>{playerCount} other player{playerCount != 1 ? 's' : ''} waiting...</span>
+            </div>
+            <div class="row debug">
+                <input type="checkbox" bind:checked={debug} /> <span>Debug</span>
+            </div>
+            {#if host}
+                <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>
+            {/if}
         </div>
-        <div class="row waiting">
-                <img alt="Waiting..." src="images/reverse.png" />
-                <span>{playerCount} other player{playerCount != 1 ? 's' : ''} waiting...</span>
-        </div>
-        <div class="row debug">
-            <input type="checkbox" bind:checked={debug} /> <span>Debug</span>
-        </div>
-        <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>
     </div>
-</div>
+{:else}
+    Loading...
+{/if}
