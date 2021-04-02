@@ -1,4 +1,4 @@
-import { Card, cardsEqual, Game, GameEvent, Hand, newDeck, Pile, rand } from "./model";
+import { Card, cardsEqual, Color, Game, GameEvent, Hand, newDeck, Pile, rand } from "./model";
 
 export type GameError =
   | { err: true, type: 'unknown', message: string }
@@ -161,7 +161,7 @@ export function draw(game: Game, event: { player: string, count: number }): Game
   return game;
 }
 
-export function play(game: Game, event: { player: string, card: Card }): {game: Game, events: GameEvent[]} | GameError {
+export function play(game: Game, event: { player: string, card: Card, chosenColor?: Color }): {game: Game, events: GameEvent[]} | GameError {
   game = clone(game);
   let player = game.players.find(p => p.name === event.player);
   let topCard = game.pile[game.pile.length - 1];
@@ -188,7 +188,11 @@ export function play(game: Game, event: { player: string, card: Card }): {game: 
   }
   player.hand = player.hand.filter(c => !cardsEqual(c, event.card));
   player.uno = player.hand.length === 1;
-  game.pile.push(event.card);
+  let card = clone(event.card);
+  if (card.color === 'wild' && event.chosenColor) {
+    card.color = event.chosenColor;
+  }
+  game.pile.push(card);
   game.currentPlayer = game.players[nextIdx].name;
   return { game, events };
 }

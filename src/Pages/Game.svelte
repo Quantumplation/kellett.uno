@@ -21,6 +21,7 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
   .container {
     display: flex;
     flex-direction: column;
+    height: 100%;
   }
   .row {
     display: flex;

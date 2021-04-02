@@ -1,6 +1,7 @@
 export type Color = 'red' | 'green' | 'blue' | 'yellow' | 'wild';
 export type Card = 
   | { id: number, type: 'normal', color: Color, value: number }
+  | { id: number, type: 'wild', color: Color }
   | { id: number, type: 'reverse', color: Color }
   | { id: number, type: 'skip', color: Color }
   | { id: number, type: 'draw', color: Color, amount: number };
@@ -16,7 +17,7 @@ export type GameEvent =
   | { id?: number, type: 'join', player: string }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
   | { id?: number, type: 'draw', player: string, count: number }
-  | { id?: number, type: 'play', player: string, card: Card }
+  | { id?: number, type: 'play', player: string, card: Card, chosenColor?: Color }
   | { id?: number, type: 'uno', target: string, caller: string }
   | { id?: number, type: 'end', winner: string, reason: string };
 
@@ -92,7 +93,7 @@ export function newDeck(): Deck {
   }
   // - Four wild cards, and four wild draw fours
   for(let i = 0; i < 4; i++) {
-    deck.push({ id: id++, type: 'normal', color: 'wild', value: 0 });
+    deck.push({ id: id++, type: 'wild', color: 'wild' });
     deck.push({ id: id++, type: 'draw', color: 'wild', amount: 4 });
   }
 
