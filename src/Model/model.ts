@@ -9,14 +9,16 @@ export type Deck = Card[];
 export type Pile = Card[];
 export type Hand = Card[];
 
-export type Player = { name: string, hand: Hand };
+export type Player = { name: string, hand: Hand, uno: boolean };
 
 export type GameEvent =
   | { id?: number, type: 'create', gameId: string, playerCount: number }
   | { id?: number, type: 'join', player: string }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
   | { id?: number, type: 'draw', player: string, count: number }
-  | { id?: number, type: 'play', player: string, card: Card };
+  | { id?: number, type: 'play', player: string, card: Card }
+  | { id?: number, type: 'uno', target: string, caller: string }
+  | { id?: number, type: 'end', winner: string, reason: string };
 
 export type Game = {
   id: string,
@@ -35,7 +37,7 @@ export function rand(min: number, max: number) {
 }
 
 export function cardsEqual(a: Card, b: Card) {
-  if (a.type != b.type || a.color != b.color) {
+  if (a.id != b.id || a.type != b.type || a.color != b.color) {
     return false;
   }
   switch(a.type) {

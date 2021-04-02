@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { Card } from '../Model/model';
+import type { Card, Player } from '../Model/model';
 import * as symbols from '../assets/symbols';
 import { emitEvent } from '../Model/peers';
 import { game, player } from '../store';
@@ -7,6 +7,8 @@ import { game, player } from '../store';
 export let card: Card;
 export let clickable = false;
 export let draw = false;
+export let uno = false;
+export let owner: Player;
 
 let Symbol;
 function getSymbol(card: Card) {
@@ -38,6 +40,9 @@ $: value = card ? card.type : 'none';
 let choosingColor = card && card.color == 'wild';
 
 function click() {
+  if (uno) {
+    emitEvent({ type: 'uno', caller: $player.toString(), target: owner.name })
+  }
   if (draw) {
     emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
   }
@@ -75,6 +80,8 @@ function click() {
   .clickable {
     cursor: pointer;
   }
+  .uno {
+  }
 </style>
 
 <div class="container" class:clickable on:click={click}>
@@ -87,5 +94,8 @@ function click() {
     <svelte:component this={Symbol} width="28" height="38"/>
   </g>
   <svelte:component this={Symbol} x="26" y="48" width="60" height="80" />
+  {#if uno}
+  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
+  {/if}
 </svg>
 </div>

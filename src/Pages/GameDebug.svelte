@@ -39,7 +39,8 @@ import { game } from '../store';
             {JSON.stringify({
               ...event,
               deck: event["deck"] ? "[...]" : undefined,
-              cards: event["cards"] ? "[...]" : undefined
+              cards: event["cards"] ? "[...]" : undefined,
+              card: event["card"] ? "[...]" : undefined
             })}
           </div>
         {/each}

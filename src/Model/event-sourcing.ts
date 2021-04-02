@@ -10,6 +10,7 @@ export type GameError =
   | { err: true, type: 'not-started' }
   | { err: true, type: 'invalid-draw', expected: Card, actual: Card }
   | { err: true, type: 'out-of-turn', player: string, currentPlayer: string }
+  | { err: true, type: 'invalid-uno', caller: string, target: string }
   | { err: true, type: 'invalid-card', hand: Hand, card: Card, pile: Pile };
 
 export function isError(err: any): err is GameError {
@@ -93,6 +94,21 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       nextGame = result.game;
       events = result.events;
     } break;
+    case 'uno': {
+      if(!game) {
+        return { err: true, type: 'not-created', event };
+      }
+      if(!game.currentPlayer) {
+        return { err: true, type: 'not-started' };
+      }
+
+      let result = uno(game, event);
+      if (isError(result)) {
+        return result;
+      }
+      nextGame = result.game;
+      events = result.events;
+    } break;
   }
   if (!nextGame) {
     return { err: true, type: 'unknown', message: 'No branches produced a next game state' };
@@ -122,7 +138,7 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
 
 export function joinGame(game: Game, playerName: string): Game {
   game = clone(game);
-  game.players.push({ name: playerName, hand: [] });
+  game.players.push({ name: playerName, hand: [], uno: false });
   return game;
 }
 
@@ -141,6 +157,7 @@ export function draw(game: Game, event: { player: string, count: number }): Game
     let next = game.deck.shift();
     player.hand.push(next);
   }
+  player.uno = player.hand.length === 1;
   return game;
 }
 
@@ -170,7 +187,22 @@ export function play(game: Game, event: { player: string, card: Card }): {game: 
     } break;
   }
   player.hand = player.hand.filter(c => !cardsEqual(c, event.card));
+  player.uno = player.hand.length === 1;
   game.pile.push(event.card);
   game.currentPlayer = game.players[nextIdx].name;
+  return { game, events };
+}
+
+export function uno(game: Game, event: { caller: string, target: string }): { game: Game, events: GameEvent[] } | GameError {
+  game = clone(game);
+  let player = game.players.find(p => p.name === event.target);
+  if (!player.uno) {
+    return { err: true, type: 'invalid-uno', caller: event.caller, target: event.target };
+  }
+  player.uno = false;
+  if(event.caller === event.target) {
+    return { game, events: [] };
+  }
+  let events: GameEvent[] = [{ type: 'draw', player: event.target, count: 2 }];
   return { game, events };
 }

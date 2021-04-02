@@ -4,6 +4,7 @@ import Waiting from './Waiting.svelte';
 import { game, player } from '../store';
 import GameDebug from './GameDebug.svelte';
 import { isClickable } from '../Model/model';
+import { handle_promise } from 'svelte/internal';
 
 export let navigate: (p) => void;
 let debug = false;
@@ -61,6 +62,9 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
         {#each player.hand as card (card.id)}
           <Card {card} clickable={isClickable($game, currentPlayer, player.name, card)} />
         {/each}
+        {#if player.uno}
+          <Card card={null} uno={true} owner={player} clickable={true} />
+        {/if}
       </div>
     {/each}
   {/if}
