@@ -41,13 +41,16 @@ $: color = card ? card.color : 'none';
 let choosingColor = false;
 
 function click() {
+  if (!clickable) {
+    return;
+  }
   if (uno) {
     emitEvent({ type: 'uno', caller: $player.toString(), target: owner.name })
   }
   if (draw) {
     emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
   }
-  if (card != null && clickable) {
+  if (card != null) {
     if (card.color === 'wild') {
       choosingColor = true;
     } else {
