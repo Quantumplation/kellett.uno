@@ -1,4 +1,4 @@
-import { Card, cardsEqual, Color, Game, GameEvent, Hand, newDeck, Pile, rand } from "./model";
+import { Card, cardsEqual, Color, Game, GameEvent, Hand, newDeck, Pile, rand, shuffleDeck } from "./model";
 
 export type GameError =
   | { err: true, type: 'unknown', message: string }
@@ -69,7 +69,8 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
         return maybeNext;
       }
 
-      nextGame = maybeNext;
+      nextGame = maybeNext.game;
+      events = maybeNext.events;
     } break;
     case 'play': {
       if(!game) {
@@ -109,9 +110,18 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       nextGame = result.game;
       events = result.events;
     } break;
+    case 'shuffle': {
+      if (!game) {
+        return { err: true, type: 'not-created', event };
+      }
+      nextGame = shuffle(game);
+    }
   }
   if (!nextGame) {
     return { err: true, type: 'unknown', message: 'No branches produced a next game state' };
+  }
+  if (nextGame.currentPlayer && nextGame.deck.length === 0) {
+    events.unshift({ type: 'shuffle' });
   }
   nextGame.lastEvent = event.id;
   nextGame.events.push(event);
@@ -150,15 +160,21 @@ export function startGame(game: Game, event: { deck: Card[], startPlayer: string
   return game;
 }
 
-export function draw(game: Game, event: { player: string, count: number }): Game | GameError {
+export function draw(game: Game, event: { player: string, count: number }): { game: Game, events: GameEvent[] } | GameError {
   game = clone(game);
   let player = game.players.find(p => p.name == event.player);
   for(var i = 0; i < event.count; i++) {
     let next = game.deck.shift();
     player.hand.push(next);
+    if (game.deck.length === 0) {
+      break;
+    }
   }
   player.uno = player.hand.length === 1;
-  return game;
+  if (game.deck.length === 0) {
+    return { game, events: [{ type: 'draw', player: event.player, count: event.count - i }] };
+  }
+  return { game, events: [] };
 }
 
 export function play(game: Game, event: { player: string, card: Card, chosenColor?: Color }): {game: Game, events: GameEvent[]} | GameError {
@@ -209,4 +225,13 @@ export function uno(game: Game, event: { caller: string, target: string }): { ga
   }
   let events: GameEvent[] = [{ type: 'draw', player: event.target, count: 2 }];
   return { game, events };
+}
+
+export function shuffle(game: Game): Game {
+  game = clone(game);
+  
+  game.deck = game.pile.slice(0, -1);
+  game.pile = game.pile.slice(-1);
+  shuffleDeck(game.deck);
+  return game;
 }

@@ -19,6 +19,7 @@ export type GameEvent =
   | { id?: number, type: 'draw', player: string, count: number }
   | { id?: number, type: 'play', player: string, card: Card, chosenColor?: Color }
   | { id?: number, type: 'uno', target: string, caller: string }
+  | { id?: number, type: 'shuffle' }
   | { id?: number, type: 'end', winner: string, reason: string };
 
 export type Game = {
@@ -57,7 +58,7 @@ export function cardsEqual(a: Card, b: Card) {
 }
 
 // Fisher Yates shuffle
-export function shuffle(old: Deck): Deck {
+export function shuffleDeck(old: Deck): Deck {
   let newDeck = Array.from(old);
   for(let idx = 0; idx < newDeck.length - 1; idx++) {
     // Pick a swap position
@@ -97,7 +98,7 @@ export function newDeck(): Deck {
     deck.push({ id: id++, type: 'draw', color: 'wild', amount: 4 });
   }
 
-  return shuffle(deck);
+  return shuffleDeck(deck);
 }
 
 export function randomPlayer(players: Player[]) {
