@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { Card, Color, Player } from '../Model/model';
 import * as symbols from '../assets/symbols';
+import Wild from './wild.svelte';
 import { emitEvent } from '../Model/peers';
 import { game, player } from '../store';
 
@@ -22,7 +23,7 @@ function getSymbol(card: Card) {
     return symbols.Skip;
   }
   if (card.type === 'wild') {
-    return symbols.IDK;
+    return card.color === 'wild' ? Wild : symbols.IDK;
   }
   if (card.type === 'draw') {
     if (card.amount === 2) {
@@ -35,7 +36,6 @@ function getSymbol(card: Card) {
 
 $: Symbol = getSymbol(card);
 $: color = card ? card.color : 'none';
-$: value = card ? card.type : 'none';
 
 let choosingColor = false;
 
@@ -109,18 +109,6 @@ function chooseColor(color: Color) {
 </style>
 
 <div class="container" class:clickable on:click={click}>
-{#if choosingColor}
-  <div class="grid">
-    <div class="row">
-      <div class="button clickable red" on:click={() => chooseColor('red')}>Red</div>
-      <div class="button clickable blue" on:click={() => chooseColor('blue')}>blue</div>
-    </div>
-    <div class="row">
-      <div class="button clickable yellow" on:click={() => chooseColor('yellow')}>yellow</div>
-      <div class="button clickable green" on:click={() => chooseColor('green')}>green</div>
-    </div>
-  </div>
-{:else}
   <svg class="card" viewBox="0 0 112 178">
     <rect width="100%" height="100%" fill="white" rx="10" />
     <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
@@ -129,10 +117,23 @@ function chooseColor(color: Color) {
     <g transform="rotate(180 50 84)">
       <svelte:component this={Symbol} width="28" height="38"/>
     </g>
-    <svelte:component this={Symbol} x="26" y="48" width="60" height="80" />
+    {#if color === 'wild'}
+      <clipPath id=cardbody>
+        <rect x="10" y="10" width="92" height="158" rx="5" />
+      </clipPath>
+      <g clip-path=url(#cardbody)>
+        <Wild
+          x={0} y={0} width={112} height={178}
+          style={card.type === 'draw' ? 'draw' : 'normal'}
+          {choosingColor}
+          {chooseColor}
+        />
+      </g>
+    {:else}
+      <svelte:component this={Symbol} x="26" y="48" width="60" height="80" />
+    {/if}
     {#if uno}
     <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
     {/if}
   </svg>
-{/if}
 </div>
