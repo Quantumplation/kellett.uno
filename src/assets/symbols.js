@@ -10,6 +10,7 @@ import Eight from './8.svg';
 import Nine from './9.svg';
 export const digits = [Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine];
 
+export { default as Pair } from './pair.svg';
 export { default as Plus2 } from './plus2.svg';
 export { default as Plus4 } from './plus4.svg';
 export { default as Reverse } from './reverse.svg';

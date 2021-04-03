@@ -104,31 +104,29 @@
   <clipPath id="{idprefix}-oval">
     <ellipse cx="56" cy="89" rx="74" ry="38" transform="skewX({-$styles.skew}) rotate(115 56 89)" stroke-width=5/>
   </clipPath>
-  <rect x=33 width=100% height=100% fill="white" transform="skewX({$styles.skew})" clip-path="url(#{idprefix}-oval)" />
-  {#each colors as color, i}
-    {#if $styles.border > 0}
+  <g transform="skewX({$styles.skew})" clip-path="url(#{idprefix}-oval)">
+    <rect x=33 width=100% height=100% fill="white" />
+    {#each colors as color, i}
+      {#if $styles.border > 0}
+        <rect
+          x={$coords[i].x - $styles.border}
+          y={$coords[i].y - $styles.border}
+          width={$styles.width + (2 * $styles.border)}
+          height={$styles.height + (2 * $styles.border)}
+          fill="white"
+          stroke="black"
+          stroke-width={$styles.border > 0.5 ? 1 : 0}
+        />
+      {/if}
       <rect
-        x={$coords[i].x - $styles.border}
-        y={$coords[i].y - $styles.border}
-        width={$styles.width + (2 * $styles.border)}
-        height={$styles.height + (2 * $styles.border)}
-        transform="skewX({$styles.skew})"
-        clip-path="url(#{idprefix}-oval)"
-        fill="white"
-        stroke="black"
-        stroke-width={$styles.border > 0.5 ? 1 : 0}
+        class={color}
+        on:click={() => clickColor(i)}
+        x={$coords[i].x}
+        y={$coords[i].y}
+        width={$styles.width}
+        height={$styles.height}
       />
-    {/if}
-    <rect
-      class={color}
-      on:click={() => clickColor(i)}
-      x={$coords[i].x}
-      y={$coords[i].y}
-      width={$styles.width}
-      height={$styles.height}
-      transform="skewX({$styles.skew})"
-      clip-path="url(#{idprefix}-oval)"
-    />
-  {/each}
+    {/each}
+  </g>
   <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" stroke="white" fill="none" stroke-width=6/>
 </svg>

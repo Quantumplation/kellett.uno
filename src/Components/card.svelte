@@ -11,8 +11,8 @@ export let draw = false;
 export let uno = false;
 export let owner: Player;
 
-let Symbol;
-function getSymbol(card: Card) {
+let CornerSymbol;
+function getSymbol(card: Card, position: 'corner' | 'center') {
   if (card == null) {
     return null;
   }
@@ -27,14 +27,15 @@ function getSymbol(card: Card) {
   }
   if (card.type === 'draw') {
     if (card.amount === 2) {
-      return symbols.Plus2;
+      return position === 'corner' ? symbols.Plus2 : symbols.Pair;
     }
     return symbols.Plus4;
   }
   return symbols.digits[card.value] || symbols.IDK;
 }
 
-$: Symbol = getSymbol(card);
+$: CornerSymbol = getSymbol(card, 'corner');
+$: CenterSymbol = getSymbol(card, 'center');
 $: color = card ? card.color : 'none';
 
 let choosingColor = false;
@@ -113,9 +114,9 @@ function chooseColor(color: Color) {
     <rect width="100%" height="100%" fill="white" rx="10" />
     <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
     <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{color}" stroke="white" stroke-width=5/>
-    <svelte:component this={Symbol} x="12" y="10" width="28" height="38" />
+    <svelte:component this={CornerSymbol} x="12" y="10" width="28" height="38" />
     <g transform="rotate(180 50 84)">
-      <svelte:component this={Symbol} width="28" height="38"/>
+      <svelte:component this={CornerSymbol} width="28" height="38"/>
     </g>
     {#if color === 'wild'}
       <clipPath id=cardbody>
@@ -130,7 +131,7 @@ function chooseColor(color: Color) {
         />
       </g>
     {:else}
-      <svelte:component this={Symbol} x="26" y="48" width="60" height="80" />
+      <svelte:component this={CenterSymbol} x="26" y="48" width="60" height="80" />
     {/if}
     {#if uno}
     <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
