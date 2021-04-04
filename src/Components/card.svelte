@@ -1,3 +1,8 @@
+<script lang="ts" context="module">
+  import { writable } from 'svelte/store';
+  const lastClickedId = writable<number | null>(null);
+</script>
+
 <script lang="ts">
 import type { Card, Color, Player } from '../Model/model';
 import * as symbols from '../assets/symbols';
@@ -51,7 +56,12 @@ $: color = card ? card.color : 'none';
 
 let choosingColor = false;
 
+$: if (!card || $lastClickedId !== card.id) {
+  choosingColor = false;
+}
+
 function click() {
+  lastClickedId.set(card ? card.id : null);
   if (!clickable) {
     return;
   }
