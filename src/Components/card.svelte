@@ -8,10 +8,19 @@ import { game, player } from '../store';
 
 export let card: Card;
 export let clickable = false;
-export let draw = false;
-export let uno = false;
-export let showing: 'front' | 'back' = card ? 'front' : 'back';
+export let role: 'hand' | 'deck' | 'pile' | 'uno' = 'hand';
+export let showing: 'front' | 'back' = showByDefault();
 export let owner: Player;
+
+function showByDefault(): 'front' | 'back' {
+  if (card) {
+    return 'front';
+  }
+  if (role === 'pile' || role === 'uno') {
+    return 'front';
+  }
+  return 'back';
+}
 
 let CornerSymbol;
 function getSymbol(card: Card, position: 'corner' | 'center') {
@@ -46,10 +55,10 @@ function click() {
   if (!clickable) {
     return;
   }
-  if (uno) {
+  if (role === 'uno') {
     emitEvent({ type: 'uno', caller: $player.toString(), target: owner.name })
   }
-  if (draw) {
+  if (role === 'deck') {
     emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
   }
   if (card != null) {
@@ -143,8 +152,8 @@ function chooseColor(color: Color) {
       {:else}
         <svelte:component this={CenterSymbol} x="26" y="48" width="60" height="80" />
       {/if}
-      {#if uno}
-      <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
+      {#if role === 'uno'}
+        <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
       {/if}
     {/if}
   </svg>

@@ -48,13 +48,13 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
   {:else}
     <span>Deck: {$game.deck.length}
       <div>
-        <Card card={null} draw={true} clickable={$game.currentPlayer == currentPlayer} />
+        <Card role="deck" clickable={$game.currentPlayer == currentPlayer} />
       </div>
     </span>
     <span>
       Pile
       <div>
-        <Card card={topCard} showing="front" />
+        <Card role="pile" card={topCard} />
       </div>
     </span>
     {#each $game.players as player}
@@ -64,7 +64,7 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
           <Card {card} showing={player.name === currentPlayer ? 'front' : 'back'} clickable={isClickable($game, currentPlayer, player.name, card)} />
         {/each}
         {#if player.uno}
-          <Card card={null} uno={true} owner={player} clickable={true} />
+          <Card role="uno" owner={player} clickable={true} />
         {/if}
       </div>
     {/each}
