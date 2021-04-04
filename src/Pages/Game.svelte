@@ -54,14 +54,14 @@ $: topCard = $game && $game.pile.length ? $game.pile[$game.pile.length - 1] : nu
     <span>
       Pile
       <div>
-        <Card card={topCard} />
+        <Card card={topCard} showing="front" />
       </div>
     </span>
     {#each $game.players as player}
       <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
       <div class="row">
         {#each player.hand as card (card.id)}
-          <Card {card} clickable={isClickable($game, currentPlayer, player.name, card)} />
+          <Card {card} showing={player.name === currentPlayer ? 'front' : 'back'} clickable={isClickable($game, currentPlayer, player.name, card)} />
         {/each}
         {#if player.uno}
           <Card card={null} uno={true} owner={player} clickable={true} />
