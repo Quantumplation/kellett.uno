@@ -15,4 +15,5 @@ export { default as Plus2 } from './plus2.svg';
 export { default as Plus4 } from './plus4.svg';
 export { default as Reverse } from './reverse.svg';
 export { default as Skip } from './skip.svg';
+export { default as Uno } from './uno.svg';
 export { default as IDK } from './idk.svg';
