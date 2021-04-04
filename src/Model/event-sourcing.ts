@@ -177,14 +177,34 @@ export function draw(game: Game, event: { player: string, count: number }): { ga
   return { game, events: [] };
 }
 
+function isLegalMove(topCard: Card | null, newCard: Card) {
+  if (!topCard) {
+    return true;
+  }
+  if (newCard.color === 'wild') {
+    return true;
+  }
+  if (newCard.color === topCard.color) {
+    return true;
+  }
+  switch (topCard.type) {
+    case 'normal': {
+      return newCard.type === 'normal' && newCard.value === topCard.value;
+    }
+    case 'draw': {
+      return newCard.type === 'draw' && newCard.amount === topCard.amount;
+    }
+    default: {
+      return newCard.type === topCard.type;
+    }
+  }
+}
+
 export function play(game: Game, event: { player: string, card: Card, chosenColor?: Color }): {game: Game, events: GameEvent[]} | GameError {
   game = clone(game);
   let player = game.players.find(p => p.name === event.player);
   let topCard = game.pile[game.pile.length - 1];
-  let firstCard = !topCard;
-  let sameColor = topCard && topCard.color === event.card.color;
-  let sameValue = topCard && topCard.type === 'normal' && event.card.type === 'normal' && topCard.value === event.card.value;
-  if (!firstCard && event.card.color != 'wild' && !sameColor && !sameValue) {
+  if (!isLegalMove(topCard, event.card)) {
     return { err: true, type: 'invalid-card', hand: player.hand, pile: game.pile, card: event.card };
   }
   let playerIdx = game.players.indexOf(player);
