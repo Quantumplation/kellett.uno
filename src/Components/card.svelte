@@ -15,13 +15,10 @@ export let card: Card;
 export let clickable = false;
 export let role: 'hand' | 'deck' | 'pile' | 'uno' = 'hand';
 export let showing: 'front' | 'back' = showByDefault();
-export let owner: Player;
+export let owner: Player | null = null;
 
 function showByDefault(): 'front' | 'back' {
-  if (card) {
-    return 'front';
-  }
-  if (role === 'pile' || role === 'uno') {
+  if (role === 'hand' || role === 'pile' || role === 'uno') {
     return 'front';
   }
   return 'back';
@@ -66,12 +63,12 @@ function click() {
     return;
   }
   if (role === 'uno') {
-    emitEvent({ type: 'uno', caller: $player.toString(), target: owner.name })
+    emitEvent({ type: 'uno', caller: $player.toString(), target: owner && owner.name });
   }
   if (role === 'deck') {
     emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
   }
-  if (card != null) {
+  if (role === 'hand') {
     if (card.color === 'wild') {
       choosingColor = true;
     } else {
