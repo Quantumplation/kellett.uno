@@ -9,7 +9,7 @@
   export let height = 178;
   export let style: 'normal' | 'draw' = 'normal';
   export let choosingColor = false;
-  export let chooseColor: (color: Color) => void;
+  export let chooseColor: (color: Color) => void = null;
 
   const idprefix = `unique-${Math.random()}`;
 

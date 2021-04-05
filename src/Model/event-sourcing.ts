@@ -136,6 +136,7 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
   return {
     id: event.gameId,
     lastEvent: 0,
+    lastPlayer: null,
     events: [],
     playerCount: event.playerCount,
     players: [],
@@ -229,6 +230,7 @@ export function play(game: Game, event: { player: string, card: Card, chosenColo
     card.color = event.chosenColor;
   }
   game.pile.push(card);
+  game.lastPlayer = player.name;
   game.currentPlayer = game.players[nextIdx].name;
   return { game, events };
 }

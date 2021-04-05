@@ -14,14 +14,22 @@ import { game, player } from '../store';
 export let card: Card;
 export let clickable = false;
 export let role: 'hand' | 'deck' | 'pile' | 'uno' = 'hand';
-export let showing: 'front' | 'back' = showByDefault();
 export let owner: Player | null = null;
 
-function showByDefault(): 'front' | 'back' {
-  if (role === 'hand' || role === 'pile' || role === 'uno') {
-    return 'front';
+export let startRevealed = false;
+let revealed = startRevealed || shouldStartRevealed();
+export function reveal() {
+  revealed = true;
+}
+
+function shouldStartRevealed(): boolean {
+  if (role === 'uno') {
+    return true;
   }
-  return 'back';
+  if (role === 'pile' && !card) {
+    return true;
+  }
+  return false;
 }
 
 let CornerSymbol;
@@ -103,41 +111,48 @@ function chooseColor(color: Color) {
     fill: $unoYellow;
     background-color: $unoYellow;
   }
-  .card {
-    width: 100px;
-  }
-  .container {
-    display: inline-block;
-  }
   .clickable {
     cursor: pointer;
   }
-  .grid {
-    display: flex;
-    flex-direction: column;
+  .card {
+    width: 100px;
+    display: inline-block;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease-out;
+
+    &.revealed {
+      transform: perspective(500px) rotateY(-180deg);
+    }
   }
-  .row {
-    display: flex;
-    flex-direction: row;
-  }
-  .button {
-    width: 50px;
-    height: 75px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
+  .face {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+
+    &.front {
+      transform: rotateY(180deg);
+    }
+
+    &.back {
+      transform: rotateY(0deg);
+      position: static;
+    }
   }
 </style>
 
-<div class="container" class:clickable on:click={click}>
-  <svg class="card" viewBox="0 0 112 178">
+<div class="card" class:clickable class:revealed on:click={click}>
+  <svg class="back face" viewBox="0 0 112 178">
     <rect width="100%" height="100%" fill="white" rx="10" />
-    {#if showing === 'back'}
-      <rect x="10" y="10" width="92" height="158" fill="black" rx="5" />
-      <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="red"/>
-      <Uno x="16" y="35" width="80" />
-    {:else}
+    <rect x="10" y="10" width="92" height="158" fill="black" rx="5" />
+    <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="red"/>
+    <Uno x="16" y="35" width="80" />
+  </svg>
+  {#if revealed}
+    <svg class="front face" viewBox="0 0 112 178">
+      <rect width="100%" height="100%" fill="white" rx="10" />
       <rect x="10" y="10" width="92" height="158" class="{color}" rx="5" />
       <ellipse cx="56" cy="89" rx="72" ry="36" transform="rotate(115 56 89)" class="{color}" stroke="white" stroke-width=5/>
       <svelte:component this={CornerSymbol} x="12" y="10" width="28" height="38" />
@@ -162,6 +177,6 @@ function chooseColor(color: Color) {
       {#if role === 'uno'}
         <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="1.5em">UNO!</text>
       {/if}
-    {/if}
-  </svg>
+    </svg>
+  {/if}
 </div>

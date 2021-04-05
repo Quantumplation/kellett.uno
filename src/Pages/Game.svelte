@@ -27,7 +27,10 @@ $: currentPlayer = $player && $player.toString();
 // The game starts by dealing 7 cards to each player, we need this many cards to animate that.
 $: deckTop = $game ? $game.deck.slice(0, 14).reverse() : [];
 
-let pileTop: typeof deckTop;
+// Some svelte plugin doesn't like us importing types, so work around that
+type GameCard = typeof deckTop[0];
+
+let pileTop: GameCard[];
 $: {
   // Render the two cards on top of the pile, with a "null" if neither is there.
   // We want to render two so that the bottom one doesn't visibly "fade out" when playing a new card.
@@ -38,6 +41,20 @@ $: {
     pileTop = [null, pile[pile.length - 1]];
   } else {
     pileTop = [null];
+  }
+}
+
+const cardRefs: Record<number, Card> = {};
+function revealCard(card: GameCard) {
+  const id = card ? card.id : -1;
+  if (cardRefs[id]) {
+    cardRefs[id].reveal();
+  }
+}
+
+function revealCardInHand(card: GameCard, playerName: string) {
+  if (playerName === currentPlayer) {
+    revealCard(card);
   }
 }
 
@@ -95,8 +112,12 @@ $: {
     <span class="pile">
       Pile
       {#each pileTop as pile (pile ? pile.id : null)}
-        <div class="card" in:receive={{key: pile ? pile.id : null}} out:send={{key: pile ? pile.id : null}}>
-          <Card role="pile" card={pile} />
+        <div class="card"
+          in:receive={{key: pile ? pile.id : null}}
+          on:introend="{() => revealCard(pile)}"
+          out:send={{key: pile ? pile.id : null}}
+        >
+          <Card role="pile" card={pile} startRevealed={$game.lastPlayer === currentPlayer} bind:this={cardRefs[pile ? pile.id : -1]} />
         </div>
       {/each}
     </span>
@@ -104,8 +125,13 @@ $: {
       <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
       <div class="row">
         {#each player.hand as card (card.id)}
-          <div class="card" in:receive={{key: card.id}} out:send={{key: card.id}} animate:flip={{duration: 400}}>
-            <Card {card} showing={player.name === currentPlayer ? 'front' : 'back'} clickable={isClickable($game, currentPlayer, player.name, card)} />
+          <div class="card"
+            in:receive={{key: card.id}}
+            on:introend="{() => revealCardInHand(card, player.name)}"
+            out:send={{key: card.id}}
+            animate:flip={{duration: 400}}
+          >
+            <Card {card} bind:this={cardRefs[card.id]} clickable={isClickable($game, currentPlayer, player.name, card)} />
           </div>
         {/each}
         {#if player.uno}

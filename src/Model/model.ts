@@ -25,6 +25,7 @@ export type GameEvent =
 export type Game = {
   id: string,
   lastEvent: number,
+  lastPlayer: string;
   events: GameEvent[],
   playerCount: number,
   players: Player[],
