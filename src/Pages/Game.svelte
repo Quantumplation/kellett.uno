@@ -23,9 +23,9 @@ const [send, receive] = crossfade({
 
 $: currentPlayer = $player && $player.toString();
 
-// Render 14 cards from the top of the deck.
-// The game starts by dealing 7 cards to each player, we need this many cards to animate that.
-$: deckTop = $game ? $game.deck.slice(0, 14).reverse() : [];
+// The game starts by dealing 7 cards to each player,
+// so render 7 cards on top of the deck per player to animate that.
+$: deckTop = $game ? $game.deck.slice(0, $game.playerCount * 7).reverse() : [];
 
 // Some svelte plugin doesn't like us importing types, so work around that
 type GameCard = typeof deckTop[0];
