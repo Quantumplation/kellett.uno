@@ -120,30 +120,30 @@ function chooseColor(color: Color) {
     transform-style: preserve-3d;
     transition: transform 0.3s ease-out;
 
-    &.revealed {
+    &.hidden {
       transform: perspective(500px) rotateY(-180deg);
     }
   }
   .face {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 100%;
     backface-visibility: hidden;
 
     &.front {
-      transform: rotateY(180deg);
+      transform: rotateY(0deg);
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
     }
 
     &.back {
-      transform: rotateY(0deg);
+      transform: rotateY(180deg);
       position: static;
     }
   }
 </style>
 
-<div class="card" class:clickable class:revealed on:click={click}>
+<div class="card" class:clickable class:hidden={!revealed} on:click={click}>
   <svg class="back face" viewBox="0 0 112 178">
     <rect width="100%" height="100%" fill="white" rx="10" />
     <rect x="10" y="10" width="92" height="158" fill="black" rx="5" />
