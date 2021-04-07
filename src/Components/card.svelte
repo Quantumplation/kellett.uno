@@ -118,7 +118,7 @@ function chooseColor(color: Color) {
     width: 100px;
     display: inline-block;
     transform-style: preserve-3d;
-    transition: transform 0.5s ease-out;
+    transition: transform 0.3s ease-out;
 
     &.revealed {
       transform: perspective(500px) rotateY(-180deg);

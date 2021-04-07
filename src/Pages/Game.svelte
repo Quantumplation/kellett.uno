@@ -12,10 +12,10 @@ export let navigate: (p) => void;
 let debug = false;
 
 const [send, receive] = crossfade({
-  duration: d => Math.sqrt(d * 800),
+  duration: d => Math.sqrt(d * 300),
   fallback() {
     return {
-      duration: 400,
+      duration: 300,
       css: (t) => `opacity: ${t}`,
     };
   }
@@ -129,7 +129,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
             in:receive={{key: card.id}}
             on:introend="{() => revealCardInHand(card, player.name)}"
             out:send={{key: card.id}}
-            animate:flip={{duration: 400}}
+            animate:flip={{duration: 300}}
           >
             <Card {card} bind:this={cardRefs[card.id]} clickable={isClickable($game, currentPlayer, player.name, card)} />
           </div>

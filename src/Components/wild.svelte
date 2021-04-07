@@ -63,7 +63,7 @@
 
   const tweenSettings = {
     easing: cubicInOut,
-    duration: 500,
+    duration: 250,
   };
   $: defaultCoords = style === 'normal' ? normalCoords : drawCoords;
   $: defaultStyles = style === 'normal' ? normalStyles : drawStyles;
