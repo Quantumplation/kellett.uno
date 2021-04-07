@@ -24,6 +24,7 @@ const [send, receive] = crossfade({
 $: currentPlayer = $player && $player.toString();
 
 $: error = $game ? $game.error : null;
+$: winner = $game ? $game.winner : null;
 
 // The game starts by dealing 7 cards to each player,
 // so render 7 cards on top of the deck per player to animate that.
@@ -96,6 +97,8 @@ function revealCardInHand(card: GameCard, playerName: string) {
 <div class="container">
 {#if error}
   ERROR: {JSON.stringify(error)}
+{:else if winner}
+  {winner} HAS WON!
 {:else if debug}
   <GameDebug />
 {:else}
@@ -114,7 +117,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
       {/each}
     </span>
     <span class="pile">
-      Pile
+      Pile: {$game.pile.length}
       {#each pileTop as pile (pile ? pile.id : null)}
         <div class="card"
           in:receive={{key: pile ? pile.id : null}}

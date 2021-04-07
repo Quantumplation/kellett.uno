@@ -9,6 +9,10 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
   if (game != null && game.lastEvent != event.id - 1) {
     return { err: true, type: 'out-of-order', id: game.lastEvent, evt: event };
   }
+  // Once the game is done, don't continue to process
+  if (game != null && game.winner != null) {
+    return { err: true, type: 'game-over' };
+  }
 
   let nextGame: Game;
   let events: GameEvent[] = [];
@@ -106,6 +110,16 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
         return goe;
       }
       nextGame = goe;
+    } break;
+    case 'end': {
+      if (!game) {
+        return { err: true, type: 'not-created', event };
+      }
+      nextGame = end(game, event.winner);
+      nextGame.lastEvent = event.id;
+      nextGame.events.push(event);
+      // HACK: return here, to avoid the stuff below
+      return { game: nextGame, events: [] };
     }
   }
   if (!nextGame) {
@@ -114,6 +128,7 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
   if (nextGame.currentPlayer && nextGame.deck.length === 0) {
     events.unshift({ type: 'shuffle' });
   }
+
   nextGame.lastEvent = event.id;
   nextGame.events.push(event);
   return { game: nextGame, events };
@@ -129,6 +144,7 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
     error: null,
     lastEvent: 0,
     lastPlayer: null,
+    winner: null,
     events: [],
     playerCount: event.playerCount,
     players: [],
@@ -221,6 +237,10 @@ export function play(game: Game, event: { player: string, card: Card, chosenColo
   game.pile.push(card);
   game.lastPlayer = player.name;
   game.currentPlayer = game.players[nextIdx].name;
+  if (player.hand.length === 0) {
+    // If playing this card causes me to win, just emit that win event
+    events.push({ type: 'end', winner: player.name, reason: 'Empty hand!' });
+  }
   return { game, events };
 }
 
@@ -258,5 +278,11 @@ export function shuffle(game: Game): Game | GameError {
       card.color = 'wild';
     }
   }
+  return game;
+}
+
+export function end(game: Game, winner: string) {
+  game = clone(game);
+  game.winner = winner;
   return game;
 }

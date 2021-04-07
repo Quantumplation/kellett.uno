@@ -30,6 +30,7 @@ export type GameError =
   | { err: true, type: 'game-full' }
   | { err: true, type: 'already-started' }
   | { err: true, type: 'not-started' }
+  | { err: true, type: 'game-over' }
   | { err: true, type: 'invalid-draw', expected: Card, actual: Card }
   | { err: true, type: 'infinite-draw' }
   | { err: true, type: 'out-of-turn', player: string, currentPlayer: string }
@@ -45,6 +46,7 @@ export type Game = {
   error: GameError,
   lastEvent: number,
   lastPlayer: string,
+  winner: string,
   events: GameEvent[],
   playerCount: number,
   players: Player[],
