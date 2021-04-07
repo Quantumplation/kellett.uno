@@ -79,7 +79,7 @@ export function newDeck(): Deck {
   //  - eighteen 1-9's, two of each color/number
   let id = 0;
   for(const color of ['red', 'yellow', 'blue', 'green'] as const) {
-    for(let value = 0; value < 10; value++) {
+    for(let value = 0; value < 1; value++) {
       deck.push({ id: id++, type: 'normal', color, value });
       if(value != 0) {
         deck.push({ id: id++, type: 'normal', color, value });
