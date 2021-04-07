@@ -25,6 +25,9 @@ import { game } from '../store';
     Game: {$game.id}
   </span>
   <span>
+    Error: {$game.error}
+  </span>
+  <span>
     Host: {host}
   </span>
   <span>

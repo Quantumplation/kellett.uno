@@ -1,4 +1,4 @@
-import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, newDeck, Pile, rand, shuffleDeck } from "./model";
+import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, isLegalMove, newDeck, Pile, rand, shuffleDeck } from "./model";
 
 export function update(game: Game, event: GameEvent): { game: Game, events: GameEvent[] } | GameError {
   // If we are error'd out, don't process any more events
@@ -181,29 +181,6 @@ export function draw(game: Game, event: { player: string, count: number }): { ga
     return { game, events: [{ type: 'draw', player: event.player, count: i }] };
   }
   return { game, events: [] };
-}
-
-function isLegalMove(topCard: Card | null, newCard: Card) {
-  if (!topCard) {
-    return true;
-  }
-  if (newCard.color === 'wild') {
-    return true;
-  }
-  if (newCard.color === topCard.color) {
-    return true;
-  }
-  switch (topCard.type) {
-    case 'normal': {
-      return newCard.type === 'normal' && newCard.value === topCard.value;
-    }
-    case 'draw': {
-      return newCard.type === 'draw' && newCard.amount === topCard.amount;
-    }
-    default: {
-      return newCard.type === topCard.type;
-    }
-  }
 }
 
 export function play(game: Game, event: { player: string, card: Card, chosenColor?: Color }): {game: Game, events: GameEvent[]} | GameError {

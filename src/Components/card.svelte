@@ -9,7 +9,7 @@ import * as symbols from '../assets/symbols';
 import { Uno } from '../assets/symbols';
 import Wild from './wild.svelte';
 import { emitEvent } from '../Model/peers';
-import { game, player } from '../store';
+import { game, isProcessing, player } from '../store';
 
 export let card: Card;
 export let clickable = false;
@@ -71,15 +71,18 @@ function click() {
     return;
   }
   if (role === 'uno') {
+    $isProcessing = true;
     emitEvent({ type: 'uno', caller: $player.toString(), target: owner && owner.name });
   }
   if (role === 'deck') {
+    $isProcessing = true;
     emitEvent({ type: 'draw', player: $player.toString(), count: 1 });
   }
   if (role === 'hand') {
     if (card.color === 'wild') {
       choosingColor = true;
     } else {
+      $isProcessing = true;
       emitEvent({ type: 'play', player: $player.toString(), card });
     }
   }
@@ -87,6 +90,7 @@ function click() {
 
 function chooseColor(color: Color) {
   choosingColor = false;
+  $isProcessing = true;
   emitEvent({ type: 'play', player: $player.toString(), card, chosenColor: color })
 }
 
@@ -113,6 +117,7 @@ function chooseColor(color: Color) {
   }
   .clickable {
     cursor: pointer;
+    margin-top: -20px;
   }
   .card {
     width: 100px;

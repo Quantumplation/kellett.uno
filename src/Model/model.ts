@@ -128,6 +128,35 @@ export function randomPlayer(players: Player[]) {
   return players[idx];
 }
 
-export function isClickable(game: Game, player: string, owner: string, card: Card) {
-  return game && player == owner && owner == game.currentPlayer;
+
+export function isLegalMove(topCard: Card | null, newCard: Card) {
+  if (!topCard) {
+    return true;
+  }
+  if (newCard.color === 'wild') {
+    return true;
+  }
+  if (newCard.color === topCard.color) {
+    return true;
+  }
+  switch (topCard.type) {
+    case 'normal': {
+      return newCard.type === 'normal' && newCard.value === topCard.value;
+    }
+    case 'draw': {
+      return newCard.type === 'draw' && newCard.amount === topCard.amount;
+    }
+    default: {
+      return newCard.type === topCard.type;
+    }
+  }
+}
+
+
+export function isClickable(game: Game, player: string, owner: string, card: Card, processing: boolean): boolean {
+  if (!game) { return false; }
+  const playerOwnsCard = player === owner;
+  const isPlayersTurn = owner === game.currentPlayer;
+  const legalMove = isLegalMove(game.pile[game.pile.length - 1], card);
+  return game && playerOwnsCard && isPlayersTurn && legalMove && !processing;
 }

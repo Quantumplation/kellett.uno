@@ -4,7 +4,7 @@ import { flip } from 'svelte/animate';
 
 import Card from '../Components/card.svelte';
 import Waiting from './Waiting.svelte';
-import { game, player } from '../store';
+import { game, isProcessing, player } from '../store';
 import GameDebug from './GameDebug.svelte';
 import { isClickable } from '../Model/model';
 
@@ -75,6 +75,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
   .row {
     display: flex;
     flex-direction: row;
+    margin-top: 30px;
   }
   .currentPlayer {
     color: red;
@@ -95,12 +96,12 @@ function revealCardInHand(card: GameCard, playerName: string) {
 <input type="checkbox" bind:checked={debug} />
 
 <div class="container">
-{#if error}
+{#if debug}
+  <GameDebug />
+{:else if error}
   ERROR: {JSON.stringify(error)}
 {:else if winner}
   {winner} HAS WON!
-{:else if debug}
-  <GameDebug />
 {:else}
   {#if !$game}
     <span>Loading...</span>
@@ -138,7 +139,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
             out:send={{key: card.id}}
             animate:flip={{duration: 300}}
           >
-            <Card {card} bind:this={cardRefs[card.id]} clickable={isClickable($game, currentPlayer, player.name, card)} />
+            <Card {card} bind:this={cardRefs[card.id]} clickable={isClickable($game, currentPlayer, player.name, card, $isProcessing)} />
           </div>
         {/each}
         {#if player.uno}
