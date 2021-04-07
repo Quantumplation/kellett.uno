@@ -9,6 +9,7 @@ export type GameError =
   | { err: true, type: 'already-started' }
   | { err: true, type: 'not-started' }
   | { err: true, type: 'invalid-draw', expected: Card, actual: Card }
+  | { err: true, type: 'infinite-draw' }
   | { err: true, type: 'out-of-turn', player: string, currentPlayer: string }
   | { err: true, type: 'invalid-uno', caller: string, target: string }
   | { err: true, type: 'invalid-card', hand: Hand, card: Card, pile: Pile };
@@ -163,17 +164,18 @@ export function startGame(game: Game, event: { deck: Card[], startPlayer: string
 
 export function draw(game: Game, event: { player: string, count: number }): { game: Game, events: GameEvent[] } | GameError {
   game = clone(game);
+  if (event.count > game.deck.length + game.pile.length) {
+    console.log(event.count, game.deck.length, game.pile.length);
+    return { err: true, type: 'infinite-draw' };
+  }
   let player = game.players.find(p => p.name == event.player);
-  for(var i = 0; i < event.count; i++) {
+  for(var i = event.count; i > 0 && game.deck.length > 0; i--) {
     let next = game.deck.shift();
     player.hand.push(next);
-    if (game.deck.length === 0) {
-      break;
-    }
   }
   player.uno = player.hand.length === 1;
-  if (game.deck.length === 0) {
-    return { game, events: [{ type: 'draw', player: event.player, count: event.count - i }] };
+  if (i > 0) {
+    return { game, events: [{ type: 'draw', player: event.player, count: i }] };
   }
   return { game, events: [] };
 }
