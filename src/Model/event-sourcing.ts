@@ -115,7 +115,11 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       if (!game) {
         return { err: true, type: 'not-created', event };
       }
-      nextGame = shuffle(game);
+      var goe = shuffle(game);
+      if (isError(goe)) {
+        return goe;
+      }
+      nextGame = goe;
     }
   }
   if (!nextGame) {
@@ -164,10 +168,6 @@ export function startGame(game: Game, event: { deck: Card[], startPlayer: string
 
 export function draw(game: Game, event: { player: string, count: number }): { game: Game, events: GameEvent[] } | GameError {
   game = clone(game);
-  if (event.count > game.deck.length + game.pile.length) {
-    console.log(event.count, game.deck.length, game.pile.length);
-    return { err: true, type: 'infinite-draw' };
-  }
   let player = game.players.find(p => p.name == event.player);
   for(var i = event.count; i > 0 && game.deck.length > 0; i--) {
     let next = game.deck.shift();
@@ -251,11 +251,25 @@ export function uno(game: Game, event: { caller: string, target: string }): { ga
   return { game, events };
 }
 
-export function shuffle(game: Game): Game {
+export function shuffle(game: Game): Game | GameError {
   game = clone(game);
+
+  if (game.pile.length === 1 && game.deck.length === 0) {
+    // The last card is on the pile, so we can't draw it;
+    return { err: true, type: 'infinite-draw' };
+  }
   
   game.deck = game.pile.slice(0, -1);
   game.pile = game.pile.slice(-1);
   shuffleDeck(game.deck);
+  // Reset the wild card states
+  for (const card of game.deck) {
+    if (card.type === 'wild') {
+      card.color = 'wild';
+    }
+    if (card.type === 'draw' && card.amount === 4) {
+      card.color = 'wild';
+    }
+  }
   return game;
 }
