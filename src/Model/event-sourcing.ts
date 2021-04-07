@@ -1,24 +1,10 @@
-import { Card, cardsEqual, Color, Game, GameEvent, Hand, newDeck, Pile, rand, shuffleDeck } from "./model";
-
-export type GameError =
-  | { err: true, type: 'unknown', message: string }
-  | { err: true, type: 'out-of-order', id: number, evt: GameEvent }
-  | { err: true, type: 'already-created' }
-  | { err: true, type: 'not-created', event: GameEvent }
-  | { err: true, type: 'game-full' }
-  | { err: true, type: 'already-started' }
-  | { err: true, type: 'not-started' }
-  | { err: true, type: 'invalid-draw', expected: Card, actual: Card }
-  | { err: true, type: 'infinite-draw' }
-  | { err: true, type: 'out-of-turn', player: string, currentPlayer: string }
-  | { err: true, type: 'invalid-uno', caller: string, target: string }
-  | { err: true, type: 'invalid-card', hand: Hand, card: Card, pile: Pile };
-
-export function isError(err: any): err is GameError {
-  return err && err.err; // Good approximation
-}
+import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, newDeck, Pile, rand, shuffleDeck } from "./model";
 
 export function update(game: Game, event: GameEvent): { game: Game, events: GameEvent[] } | GameError {
+  // If we are error'd out, don't process any more events
+  if (game != null && game.error != null) {
+    return game.error;
+  }
   // Must process events in order
   if (game != null && game.lastEvent != event.id - 1) {
     return { err: true, type: 'out-of-order', id: game.lastEvent, evt: event };
@@ -140,6 +126,7 @@ function clone<T>(a: T): T {
 export function createGame(event: { gameId: string, playerCount: number }): Game {
   return {
     id: event.gameId,
+    error: null,
     lastEvent: 0,
     lastPlayer: null,
     events: [],

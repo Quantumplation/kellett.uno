@@ -23,6 +23,8 @@ const [send, receive] = crossfade({
 
 $: currentPlayer = $player && $player.toString();
 
+$: error = $game ? $game.error : null;
+
 // The game starts by dealing 7 cards to each player,
 // so render 7 cards on top of the deck per player to animate that.
 $: deckTop = $game ? $game.deck.slice(0, $game.playerCount * 7).reverse() : [];
@@ -92,7 +94,9 @@ function revealCardInHand(card: GameCard, playerName: string) {
 <input type="checkbox" bind:checked={debug} />
 
 <div class="container">
-{#if debug}
+{#if error}
+  ERROR: {JSON.stringify(error)}
+{:else if debug}
   <GameDebug />
 {:else}
   {#if !$game}

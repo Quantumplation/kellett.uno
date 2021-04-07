@@ -1,7 +1,6 @@
 <script lang="ts">
 import Button from '../Components/button.svelte';
-import { isError } from '../Model/event-sourcing';
-import { rand } from '../Model/model';
+import { rand, isError } from '../Model/model';
 import { connect, emitEvent } from '../Model/peers';
 import { game, player } from '../store';
 export let navigate: (p: string) => void;

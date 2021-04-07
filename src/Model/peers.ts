@@ -1,5 +1,6 @@
-import type { Game, GameEvent } from './model';
-import { GameError, isError, update } from "./event-sourcing";
+import type { Game, GameEvent, GameError } from './model';
+import { isError } from './model';
+import { update } from "./event-sourcing";
 import { game } from '../store';
 import Peer from 'peerjs';
 
@@ -60,6 +61,7 @@ export function connect(id: string) {
         console.log('[CLNT] Received: ', data);
         if (isError(data)) {
           console.log('[CLNT] Error from server: ', data);
+          game.update(g => { g.error = data; return g; });
         } else {
           let goe = receiveEvent(data);
           if (isError(goe)) {
@@ -80,6 +82,9 @@ export function emitEvent(event: GameEvent): GameError | null {
     let goe = receiveEvent(event);
     if (isError(goe)) {
       console.log('[GAME] Error applying state: ', goe);
+      for (var client of Object.values(clients)) {
+        client.conn.send(goe);
+      }
       return goe;
     } else if(goe && goe.length > 0) {
       for(const evt of goe) {
@@ -106,6 +111,7 @@ export function receiveEvent(event: GameEvent): GameError | GameEvent[] {
     let goe = update(g, event);
     if (isError(goe)) {
       error = goe;
+      g.error = goe;
       return g;
     }
 

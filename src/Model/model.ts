@@ -22,10 +22,29 @@ export type GameEvent =
   | { id?: number, type: 'shuffle' }
   | { id?: number, type: 'end', winner: string, reason: string };
 
+export type GameError =
+  | { err: true, type: 'unknown', message: string }
+  | { err: true, type: 'out-of-order', id: number, evt: GameEvent }
+  | { err: true, type: 'already-created' }
+  | { err: true, type: 'not-created', event: GameEvent }
+  | { err: true, type: 'game-full' }
+  | { err: true, type: 'already-started' }
+  | { err: true, type: 'not-started' }
+  | { err: true, type: 'invalid-draw', expected: Card, actual: Card }
+  | { err: true, type: 'infinite-draw' }
+  | { err: true, type: 'out-of-turn', player: string, currentPlayer: string }
+  | { err: true, type: 'invalid-uno', caller: string, target: string }
+  | { err: true, type: 'invalid-card', hand: Hand, card: Card, pile: Pile };
+
+export function isError(err: any): err is GameError {
+  return err && err.err; // Good approximation
+}
+
 export type Game = {
   id: string,
+  error: GameError,
   lastEvent: number,
-  lastPlayer: string;
+  lastPlayer: string,
   events: GameEvent[],
   playerCount: number,
   players: Player[],
