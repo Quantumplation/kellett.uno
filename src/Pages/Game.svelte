@@ -9,6 +9,8 @@ import GameDebug from './GameDebug.svelte';
 import { isClickable } from '../Model/model';
 
 export let navigate: (p) => void;
+export let host = false;
+export let gameId;
 let debug = false;
 
 const [send, receive] = crossfade({
@@ -108,7 +110,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
     <button on:click={() => navigate("create")}>Create</button>
     <button on:click={() => navigate("join")}>Join</button>
   {:else if !$game.currentPlayer}
-    <Waiting {navigate} />
+    <Waiting {navigate} host={host} />
   {:else}
     <span class="deck">Deck: {$game.deck.length}
       {#each deckTop as deck (deck.id)}

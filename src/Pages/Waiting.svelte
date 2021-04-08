@@ -144,12 +144,14 @@ function startGame() {
     }
     .waiting {
         padding: 10px 16px;
-        margin-bottom: 16px;
     }
     .waiting img {
         width: 20%;
         animation: pausing-rotate ease-in-out 8s infinite;
         padding: 5px;
+    }
+    .player-list {
+        margin-top: -40px;
     }
 
     @keyframes pausing-rotate {
@@ -188,6 +190,13 @@ function startGame() {
             <div class="row waiting">
                     <img alt="Waiting..." src="/images/reverse.png" />
                     <span>{playerCount} other player{playerCount != 1 ? 's' : ''} waiting...</span>
+            </div>
+            <div class="row player-list">
+                <ul>
+                    {#each $game.players as player}
+                        <li>{player.name}</li>
+                    {/each}
+                </ul>
             </div>
             {#if host}
                 <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>

@@ -6,8 +6,8 @@ import { game, player } from '../store';
 export let navigate: (p: string) => void;
 
 export let gameCode = "";
-let joinDisabled = gameCode != null;
-$: joinDisabled = !gameCode;
+let playerName;
+$: joinDisabled = gameCode == null || playerName == null;
 
 function navigateTo(p: string) {
     return () => {
@@ -28,7 +28,6 @@ function join() {
                 setTimeout(join, 1000);
                 return u;
             }
-            let playerName = 'Player ' + rand(0, 100000);
             let goe = emitEvent({ type: 'join', player: playerName });
             player.set(playerName);
             if (isError(goe)) {
@@ -107,6 +106,9 @@ function join() {
         </ul>
         <div class="row code">
             <input type="text" placeholder="Game Code" bind:value={gameCode} />
+        </div>
+        <div class="row code">
+            <input type="text" placeholder="Player Name" bind:value={playerName} />
         </div>
         <div class="row join">
             <Button disabled={joinDisabled} on:click={join}>Join</Button>
