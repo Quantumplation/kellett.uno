@@ -157,6 +157,14 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
 
 export function joinGame(game: Game, playerName: string): Game {
   game = clone(game);
+  let first = true;
+  while (game.players.find(p => p.name === playerName) != null) {
+    if (first) {
+      playerName += " I";
+      first = false;
+    }
+    playerName += "I"
+  }
   game.players.push({ name: playerName, hand: [], uno: false });
   return game;
 }
