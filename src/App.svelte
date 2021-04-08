@@ -41,11 +41,11 @@ function gameId() {
 </style>
 
 {#if page == '' || page == 'home'}
-<Home {navigate} />
+  <Home {navigate} />
 {:else if page === 'create'}
-<Create {navigate} />
-{:else if page === 'join'}
-<Join {navigate} />
+  <Create {navigate} />
+{:else if page.startsWith('join')}
+  <Join {navigate} gameCode={gameId()} />
 {:else if page.startsWith('game')}
   <Game {navigate} />
 {/if}

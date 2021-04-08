@@ -19,6 +19,7 @@ $: {
 }
 
 async function clickStart() {
+    const origin = window.location.origin;
     pressed = true;
     var textArea = document.createElement("textarea");
     textArea.style.position = 'fixed';
@@ -29,7 +30,7 @@ async function clickStart() {
     textArea.style.outline = 'none';
     textArea.style.boxShadow = 'none';
     textArea.style.background = 'transparent';
-    textArea.value = $game.id;
+    textArea.value = `${origin}/join/${$game.id}`;
     document.body.appendChild(textArea);
     textArea.focus();
     textArea.select();

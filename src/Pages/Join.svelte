@@ -5,7 +5,7 @@ import { connect, emitEvent } from '../Model/peers';
 import { game, player } from '../store';
 export let navigate: (p: string) => void;
 
-let gameCode = "";
+export let gameCode = "";
 let joinDisabled = gameCode != null;
 $: joinDisabled = !gameCode;
 
@@ -17,7 +17,7 @@ function navigateTo(p: string) {
 }
 
 function join() {
-    connect(gameCode);
+    connect(gameCode.trim());
 
     // TODO: do cleaner
     setTimeout(function join() {
