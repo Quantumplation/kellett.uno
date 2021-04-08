@@ -117,7 +117,7 @@ function chooseColor(color: Color) {
   }
   .clickable {
     cursor: pointer;
-    margin-top: -20px;
+    transform: translateY(-20px);
   }
   .card {
     width: 100px;
