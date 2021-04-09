@@ -10,7 +10,7 @@ let host: Peer.DataConnection;
 
 /** Server code */
 export function startListening(id: string) {
-  peer = new Peer(`${id}`, { debug: 3 });
+  peer = new Peer(`${id}`, { debug: 2 });
 
   // If we ever get an error, make sure to print it so we can debug
   peer.on('error', (err) => {
