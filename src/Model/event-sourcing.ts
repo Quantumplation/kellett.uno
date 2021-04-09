@@ -192,6 +192,11 @@ export function startGame(game: Game, event: { deck: Card[], startPlayer: string
   game.playerCount = game.players.length;
   game.deck = event.deck;
   game.currentPlayer = event.startPlayer;
+
+  // Play a shuffle sound
+  var audio = new Audio('/sounds/shuffle.wav');
+  audio.play();
+
   return game;
 }
 
@@ -206,6 +211,10 @@ export function draw(game: Game, event: { player: string, count: number }): { ga
   if (i > 0) {
     return { game, events: [{ type: 'draw', player: event.player, count: i }] };
   }
+  
+  var audio = new Audio('/sounds/draw.wav');
+  audio.play();
+
   return { game, events: [] };
 }
 
@@ -247,6 +256,10 @@ export function play(game: Game, event: { player: string, card: Card, chosenColo
     // If playing this card causes me to win, just emit that win event
     events.push({ type: 'end', winner: player.name, reason: 'Empty hand!' });
   }
+  
+  var audio = new Audio('/sounds/play.wav');
+  audio.play();
+
   return { game, events };
 }
 
@@ -284,6 +297,10 @@ export function shuffle(game: Game): Game | GameError {
       card.color = 'wild';
     }
   }
+  
+  // Play a shuffle sound
+  var audio = new Audio('/sounds/shuffle.wav');
+  audio.play();
 
   return game;
 }
