@@ -40,6 +40,11 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
     case 'leave': {
       if (game) {
         nextGame = clone(game);
+        if (nextGame.currentPlayer == event.player) {
+          let idx = nextGame.players.findIndex(p => p.name === event.player);
+          let nextIdx = (nextGame.players.length + idx + nextGame.direction * 2) % nextGame.players.length;
+          nextGame.currentPlayer = nextGame.players[nextIdx].name;
+        }
         if (game.currentPlayer) {
           // Game has started, shuffle their hand into the deck
           let player = nextGame.players.find(p => p.name === event.player);
@@ -278,6 +283,7 @@ export function shuffle(game: Game): Game | GameError {
       card.color = 'wild';
     }
   }
+
   return game;
 }
 
