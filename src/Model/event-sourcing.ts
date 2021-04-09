@@ -37,6 +37,18 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       
       nextGame = joinGame(game, event.player);
     } break;
+    case 'leave': {
+      if (game) {
+        nextGame = clone(game);
+        if (game.currentPlayer) {
+          // Game has started, shuffle their hand into the deck
+          let player = nextGame.players.find(p => p.name === event.player);
+          nextGame.deck.push(...player.hand);
+          nextGame.deck = shuffleDeck(nextGame.deck);
+        }
+        nextGame.players = nextGame.players.filter(p => p.name != event.player);
+      }
+    } break;
     case 'start': {
       if(!game) {
         return { err: true, type: 'not-created', event };
