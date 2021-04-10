@@ -5,8 +5,11 @@
   import Join from './Pages/Join.svelte';
   import Game from './Pages/Game.svelte';
   import GameDebug from './Pages/GameDebug.svelte';
+  import { page } from './store';
 
-  let page = '';
+  $: console.log(`[LOCAL] Moving to page ${$page}`);
+  $: navigate($page);
+
   navigate(window.location.pathname.substring(1) || '');
   function navigate(p: string) {
     if (p == 'home') {
@@ -15,23 +18,23 @@
     if (window.location.pathname != `/${p}`) {
       window.history.pushState(null, null, `/${p}`);
     }
-    page = p;
+    $page = p;
   }
 
-function gameId() {
-  return page.split('/')[1];
+function gameId(p: string) {
+  return p.split('/')[1];
 }
-function isHost() {
-  return page.includes('host');
+function isHost(p: string) {
+  return p.includes('host');
 }
-function isWatch() {
-  return page.includes('watch');
+function isWatch(p: string) {
+  return p.includes('watch');
 }
 
 </script>
 
 <svelte:window
-  on:popstate={(e) => page = document.location.pathname.substring(1)}
+  on:popstate={(e) => $page = document.location.pathname.substring(1)}
 />
 
 <style type="text/scss">
@@ -46,12 +49,12 @@ function isWatch() {
   }
 </style>
 
-{#if page == '' || page == 'home'}
+{#if $page == '' || $page == 'home'}
   <Home {navigate} />
-{:else if page === 'create'}
+{:else if $page === 'create'}
   <Create {navigate} />
-{:else if page.startsWith('join')}
-  <Join {navigate} gameCode={gameId()} />
-{:else if page.startsWith('game')}
-  <Game {navigate} host={isHost()} watch={isWatch()} />
+{:else if $page.startsWith('join')}
+  <Join {navigate} gameCode={gameId($page)} />
+{:else if $page.startsWith('game')}
+  <Game {navigate} host={isHost($page)} watch={isWatch($page)} />
 {/if}

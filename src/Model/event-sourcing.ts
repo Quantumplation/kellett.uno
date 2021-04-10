@@ -235,7 +235,7 @@ export function play(game: Game, event: { player: string, card: Card, chosenColo
     case 'reverse': {
       game.direction *= -1;
       // Recompute the next player, since direction has changed
-      nextIdx = (game.players.length + playerIdx + game.direction) & game.players.length;
+      nextIdx = (game.players.length + playerIdx + game.direction) % game.players.length;
       nextPlayer = game.players[nextIdx];
     } break;
     case 'draw': {

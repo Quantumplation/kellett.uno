@@ -1,7 +1,7 @@
 import type { Game, GameEvent, GameError } from './model';
 import { isError } from './model';
 import { update } from "./event-sourcing";
-import { game } from '../store';
+import { game, page, player } from '../store';
 import Peer from 'peerjs';
 
 let peer: Peer;
@@ -52,8 +52,20 @@ export function startListening(id: string) {
       // When we receive data from one of the players
       conn.on('data', (data) => {
         console.log('[HOST] Received:', data);
+
         // If we receive a join event, check for impersonation, or track the player on the connection
         if (data.type == 'join') {
+          let hasStarted = false;
+          game.update(g => {
+            hasStarted = !!g.currentPlayer;
+            return g;
+          });
+          if (hasStarted) {
+            // Redirect them to the watch page
+            conn.send({ err: true, type: 'already-started' });
+            return;
+          }
+
           if (conn.metadata != null && conn.metadata != data.player) {
             console.log('[HOST] Impersonation?', data);
             conn.close();
@@ -62,12 +74,14 @@ export function startListening(id: string) {
             conn.metadata = data.player;
           }
         }
+
         // Attempt to apply the event to the game state
         let goe = emitEvent(data);
         // If we got an error, mirror that to the person who sent us the message
         if (isError(goe)) {
           console.log('[HOST] Error applying event', goe);
           conn.send(goe);
+          return;
         }
       });
       // Whenever the game is updated, pump messages to our clients
@@ -108,7 +122,14 @@ export function connect(id: string) {
         console.log('[CLNT] Received: ', data);
         if (isError(data)) {
           console.log('[CLNT] Error from server: ', data);
-          game.update(g => { g.error = data; return g; });
+          if (data.type === 'already-started') {
+            // HACK(pi): Just downgrade to watching,
+            // by redirecting the page
+            page.set(`game/${id}/watch`);
+            player.set(null);
+          } else {
+            game.update(g => { g.error = data; return g; });
+          }
         } else {
           let goe = receiveEvent(data);
           if (isError(goe)) {

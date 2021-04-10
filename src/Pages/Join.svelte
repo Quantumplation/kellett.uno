@@ -26,16 +26,11 @@ function join(watch: boolean) {
                 // Retry in one second
                 console.log('Retrying...');
                 setTimeout(join, 1000);
-                return u;
-            }
-            if (watch) {
+            } else if (watch) {
                 navigate(`game/${u.id}/watch`);
             } else {
-                let goe = emitEvent({ type: 'join', player: playerName });
+                emitEvent({ type: 'join', player: playerName });
                 player.set(playerName);
-                if (isError(goe)) {
-                    console.log('?? ', goe);
-                }
                 navigate(`game/${u.id}`);
             }
             return u;

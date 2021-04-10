@@ -13,6 +13,8 @@ export let host = false;
 export let watch = false;
 let debug = false;
 
+$: console.log('Is Watch: ', watch, ' player: ', $player);
+
 const [send, receive] = crossfade({
   duration: d => Math.sqrt(d * 300),
   fallback() {
