@@ -41,7 +41,7 @@ export function startListening(id: string) {
           conn.send(goe);
         }
       }
-      clients[conn.peer] = null;
+      delete clients[conn.peer];
     });
 
     // Wait for the connection to finish opening
