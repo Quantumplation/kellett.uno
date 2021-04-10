@@ -24,6 +24,9 @@ function gameId() {
 function isHost() {
   return page.includes('host');
 }
+function isWatch() {
+  return page.includes('watch');
+}
 
 </script>
 
@@ -50,5 +53,5 @@ function isHost() {
 {:else if page.startsWith('join')}
   <Join {navigate} gameCode={gameId()} />
 {:else if page.startsWith('game')}
-  <Game {navigate} host={isHost()} />
+  <Game {navigate} host={isHost()} watch={isWatch()} />
 {/if}

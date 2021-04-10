@@ -10,7 +10,7 @@ import { isClickable } from '../Model/model';
 
 export let navigate: (p) => void;
 export let host = false;
-export let gameId;
+export let watch = false;
 let debug = false;
 
 const [send, receive] = crossfade({
@@ -58,7 +58,7 @@ function revealCard(card: GameCard) {
 }
 
 function revealCardInHand(card: GameCard, playerName: string) {
-  if (playerName === currentPlayer) {
+  if (playerName === currentPlayer || watch) {
     revealCard(card);
   }
 }
@@ -115,7 +115,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
     <span class="deck">Deck: {$game.deck.length}
       {#each deckTop as deck (deck.id)}
         <div class="card" in:receive={{key: deck.id}} out:send={{key: deck.id}}>
-          <Card role="deck" card={deck} clickable={$game.currentPlayer == currentPlayer} />
+          <Card role="deck" card={deck} clickable={!watch && $game.currentPlayer == currentPlayer} />
         </div>
       {/each}
     </span>
@@ -141,11 +141,11 @@ function revealCardInHand(card: GameCard, playerName: string) {
             out:send={{key: card.id}}
             animate:flip={{duration: 300}}
           >
-            <Card {card} bind:this={cardRefs[card.id]} clickable={isClickable($game, currentPlayer, player.name, card, $isProcessing)} />
+            <Card {card} bind:this={cardRefs[card.id]} clickable={!watch && isClickable($game, currentPlayer, player.name, card, $isProcessing)} />
           </div>
         {/each}
         {#if player.uno}
-          <Card role="uno" owner={player} clickable={true} />
+          <Card role="uno" owner={player} clickable={!watch} />
         {/if}
       </div>
     {/each}

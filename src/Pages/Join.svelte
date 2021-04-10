@@ -16,7 +16,7 @@ function navigateTo(p: string) {
     }
 }
 
-function join() {
+function join(watch: boolean) {
     connect(gameCode.trim());
 
     // TODO: do cleaner
@@ -28,12 +28,16 @@ function join() {
                 setTimeout(join, 1000);
                 return u;
             }
-            let goe = emitEvent({ type: 'join', player: playerName });
-            player.set(playerName);
-            if (isError(goe)) {
-                console.log('?? ', goe);
+            if (watch) {
+                navigate(`game/${u.id}/watch`);
+            } else {
+                let goe = emitEvent({ type: 'join', player: playerName });
+                player.set(playerName);
+                if (isError(goe)) {
+                    console.log('?? ', goe);
+                }
+                navigate(`game/${u.id}`);
             }
-            navigate(`game/${u.id}`);
             return u;
         });
     }, 1000);
@@ -111,7 +115,8 @@ function join() {
             <input type="text" placeholder="Player Name" bind:value={playerName} />
         </div>
         <div class="row join">
-            <Button disabled={joinDisabled} on:click={join}>Join</Button>
+            <Button disabled={joinDisabled} on:click={() => join(false)}>Join</Button>
+            <Button on:click={() => join(true)}>Watch</Button>
         </div>
     </div>
 </div>
