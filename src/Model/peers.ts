@@ -92,8 +92,11 @@ export function startListening(id: string) {
           // HACK: peerjs has a bug, where they don't emit close events
           if (client.conn.peerConnection.iceConnectionState === 'disconnected') {
             console.log(`[HOST] ${client.conn.metadata} (${client.conn.peer}) has disconnected`);
+            let isPlayer = !!client.conn.metadata;
             delete clients[c];
-            emitEvent({ type: 'leave', player: client.conn.metadata });
+            if (isPlayer) {
+              emitEvent({ type: 'leave', player: client.conn.metadata });
+            }
             continue;
           }
           // There may be multiple events to send
