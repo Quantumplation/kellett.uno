@@ -31,9 +31,6 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       if (game.currentPlayer) {
         return { err: true, type: 'already-started' };
       }
-      if (game.players.length == game.playerCount) {
-        return { err: true, type: 'game-full' };
-      }
       
       nextGame = joinGame(game, event.player);
     } break;
@@ -155,7 +152,7 @@ function clone<T>(a: T): T {
   return JSON.parse(JSON.stringify(a));
 }
 
-export function createGame(event: { gameId: string, playerCount: number }): Game {
+export function createGame(event: { gameId: string }): Game {
   return {
     id: event.gameId,
     error: null,
@@ -163,7 +160,6 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
     lastPlayer: null,
     winner: null,
     events: [],
-    playerCount: event.playerCount,
     players: [],
     currentPlayer: null,
     deck: [],
@@ -189,7 +185,6 @@ export function joinGame(game: Game, playerName: string): Game {
 
 export function startGame(game: Game, event: { deck: Card[], startPlayer: string }): Game {
   game = clone(game);
-  game.playerCount = game.players.length;
   game.deck = event.deck;
   game.currentPlayer = event.startPlayer;
 

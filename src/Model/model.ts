@@ -13,7 +13,7 @@ export type Hand = Card[];
 export type Player = { name: string, hand: Hand, uno: boolean };
 
 export type GameEvent =
-  | { id?: number, type: 'create', gameId: string, playerCount: number }
+  | { id?: number, type: 'create', gameId: string }
   | { id?: number, type: 'join', player: string }
   | { id?: number, type: 'leave', player: string }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
@@ -28,7 +28,6 @@ export type GameError =
   | { err: true, type: 'out-of-order', id: number, evt: GameEvent }
   | { err: true, type: 'already-created' }
   | { err: true, type: 'not-created', event: GameEvent }
-  | { err: true, type: 'game-full' }
   | { err: true, type: 'already-started' }
   | { err: true, type: 'not-started' }
   | { err: true, type: 'game-over' }
@@ -49,7 +48,6 @@ export type Game = {
   lastPlayer: string,
   winner: string,
   events: GameEvent[],
-  playerCount: number,
   players: Player[],
   currentPlayer: string,
   deck: Deck,

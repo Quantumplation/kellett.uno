@@ -26,7 +26,7 @@ function newGame() {
         id = shortid.generate();
     }
 
-    emitEvent({ type: 'create', gameId: id, playerCount: 4 });
+    emitEvent({ type: 'create', gameId: id });
     emitEvent({ type: 'join', player: playerName });
     player.set(playerName);
     startListening(id);
