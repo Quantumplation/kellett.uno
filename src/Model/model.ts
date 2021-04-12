@@ -93,32 +93,37 @@ export function shuffleDeck(old: Deck): Deck {
   return newDeck;
 }
 
-export function newDeck(): Deck {
-  let deck: Deck = [];
-  // Fill the deck with the appropriate cards
-  // An uno deck has 108 cards
-  //  - four 0's, one of each color
-  //  - eighteen 1-9's, two of each color/number
+export function newDeck(players: number): Deck {
   let id = 0;
-  for(const color of ['red', 'yellow', 'blue', 'green'] as const) {
-    for(let value = 0; value < 10; value++) {
-      deck.push({ id: id++, type: 'normal', color, value });
-      if(value != 0) {
+  let deck: Deck = [];
+
+  // Use 1 deck for every 4 players
+  let deckCount = Math.floor(players / 4);
+  for (let i = 0; i <= deckCount; i++) {
+    // Fill the deck with the appropriate cards
+    // An uno deck has 108 cards
+    //  - four 0's, one of each color
+    //  - eighteen 1-9's, two of each color/number
+    for(const color of ['red', 'yellow', 'blue', 'green'] as const) {
+      for(let value = 0; value < 10; value++) {
         deck.push({ id: id++, type: 'normal', color, value });
+        if(value != 0) {
+          deck.push({ id: id++, type: 'normal', color, value });
+        }
+      }
+
+      //- 24 action cards, two of each per color
+      for(let i = 0; i < 2; i++) {
+        deck.push({ id: id++, type: 'skip', color });
+        deck.push({ id: id++, type: 'reverse', color });
+        deck.push({ id: id++, type: 'draw', color, amount: 2 });
       }
     }
-
-    //- 24 action cards, two of each per color
-    for(let i = 0; i < 2; i++) {
-      deck.push({ id: id++, type: 'skip', color });
-      deck.push({ id: id++, type: 'reverse', color });
-      deck.push({ id: id++, type: 'draw', color, amount: 2 });
+    // - Four wild cards, and four wild draw fours
+    for(let i = 0; i < 4; i++) {
+      deck.push({ id: id++, type: 'wild', color: 'wild' });
+      deck.push({ id: id++, type: 'draw', color: 'wild', amount: 4 });
     }
-  }
-  // - Four wild cards, and four wild draw fours
-  for(let i = 0; i < 4; i++) {
-    deck.push({ id: id++, type: 'wild', color: 'wild' });
-    deck.push({ id: id++, type: 'draw', color: 'wild', amount: 4 });
   }
 
   return shuffleDeck(deck);

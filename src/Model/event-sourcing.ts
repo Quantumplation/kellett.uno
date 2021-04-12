@@ -175,6 +175,7 @@ export function createGame(event: { gameId: string, playerCount: number }): Game
 export function joinGame(game: Game, playerName: string): Game {
   game = clone(game);
   let first = true;
+  // TODO: this doesn't actually work, because the player doesn't get notified of the new name
   while (game.players.find(p => p.name === playerName) != null) {
     if (first) {
       playerName += " I";
