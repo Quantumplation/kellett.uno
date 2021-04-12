@@ -32,7 +32,7 @@ $: winner = $game ? $game.winner : null;
 
 // The game starts by dealing 7 cards to each player,
 // so render 7 cards on top of the deck per player to animate that.
-$: deckTop = $game ? $game.deck.slice(0, $game.playerCount * 7).reverse() : [];
+$: deckTop = $game ? $game.deck.slice(0, $game.players.length * 7).reverse() : [];
 
 // Some svelte plugin doesn't like us importing types, so work around that
 type GameCard = typeof deckTop[0];
@@ -79,7 +79,13 @@ function revealCardInHand(card: GameCard, playerName: string) {
   .row {
     display: flex;
     flex-direction: row;
-    margin-top: 30px;
+    border: 1px solid white;
+    border-radius: 5px;
+    margin-top: 25px;
+    padding-top: 20px;
+  }
+  .player-name {
+    font-size: 20pt;
   }
   .currentPlayer {
     color: red;
@@ -134,7 +140,6 @@ function revealCardInHand(card: GameCard, playerName: string) {
       {/each}
     </span>
     {#each $game.players as player}
-      <span class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
       <div class="row">
         {#each player.hand as card (card.id)}
           <div class="card"
@@ -150,6 +155,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
           <Card role="uno" owner={player} clickable={!watch} />
         {/if}
       </div>
+      <span class="player-name" class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
     {/each}
   {/if}
 {/if}

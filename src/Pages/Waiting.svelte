@@ -199,7 +199,7 @@ function startGame() {
                 </ul>
             </div>
             {#if host}
-                <Button disabled={playerCount < 1} on:click={startGame}>Start</Button>
+                <Button disabled={playerCount < 0} on:click={startGame}>Start</Button>
             {/if}
         </div>
     </div>
