@@ -3,6 +3,7 @@ import Button from '../Components/button.svelte';
 import shortid from "shortid";
 import { emitEvent, startListening } from "../Model/peers";
 import { game, player } from "../store";
+import { randomName } from '../Model/model';
 
 export let navigate: (p: string) => void;
 
@@ -25,6 +26,8 @@ function newGame() {
     while(id == null || id.startsWith('_') || id.startsWith('-') || id.endsWith('_') || id.endsWith('-')) {
         id = shortid.generate();
     }
+
+    playerName = playerName || randomName();
 
     emitEvent({ type: 'create', gameId: id });
     emitEvent({ type: 'join', player: playerName });

@@ -1,13 +1,13 @@
 <script lang="ts">
 import Button from '../Components/button.svelte';
-import { rand, isError } from '../Model/model';
+import { rand, isError, randomName } from '../Model/model';
 import { connect, emitEvent } from '../Model/peers';
 import { game, player } from '../store';
 export let navigate: (p: string) => void;
 
 export let gameCode = "";
 let playerName;
-$: joinDisabled = gameCode == null || playerName == null;
+$: joinDisabled = gameCode == null;
 
 function navigateTo(p: string) {
     return () => {
@@ -18,6 +18,8 @@ function navigateTo(p: string) {
 
 function join(watch: boolean) {
     connect(gameCode.trim());
+
+    playerName = playerName || randomName();
 
     // TODO: do cleaner
     setTimeout(function join() {

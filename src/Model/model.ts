@@ -132,6 +132,30 @@ export function randomPlayer(players: Player[]) {
   return players[idx];
 }
 
+const adjectives = [
+  "plain", "icy", "greasy",
+  "tired", "sharp", "voiceless",
+  "sweet", "resonant", "knowledgeable",
+  "plausible", "awful", "lacking",
+  "true", "grotesque", "spotted",
+  "royal", "vulgar", "foregoing",
+  "efficient", "fair", "numberless",
+  "understood", "nonstop", "lovely"
+];
+const animals = [
+  "lovebird", "coati", "puma",
+  "chinchilla", "jerboa", "elephant",
+  "marten", "tapir", "puppy",
+  "hippopotamus", "okapi", "panda",
+  "bear", "toad", "prairie dog",
+  "coyote", "guinea pig", "mink",
+  "ram", "mule", "dung beetle",
+  "highland cow", "ground hot", "ibex"
+];
+
+export function randomName() {
+  return `${adjectives[rand(0, adjectives.length)]} ${animals[rand(0, animals.length)]}`;
+}
 
 export function isLegalMove(topCard: Card | null, newCard: Card) {
   if (!topCard) {
