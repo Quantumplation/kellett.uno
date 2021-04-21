@@ -1,12 +1,11 @@
 <script lang="ts">
 import { crossfade } from 'svelte/transition';
-import { flip } from 'svelte/animate';
-
+import type { Card as GameCard } from '../Model/model';
 import Card from '../Components/card.svelte';
 import Waiting from './Waiting.svelte';
 import { game, isProcessing, player } from '../store';
 import GameDebug from './GameDebug.svelte';
-import { isClickable } from '../Model/model';
+import Hand from './Hand.svelte';
 
 export let navigate: (p) => void;
 export let host = false;
@@ -25,7 +24,9 @@ const [send, receive] = crossfade({
   }
 });
 
-$: currentPlayer = $player && $player.toString();
+$: currentPlayerName = $player && $player.toString();
+$: currentPlayer = $game ? $game.players.find(p => p.name == currentPlayerName) : null;
+$: otherPlayers = $game ? $game.players.filter(p => p.name != currentPlayerName) : null;
 
 $: error = $game ? $game.error : null;
 $: winner = $game ? $game.winner : null;
@@ -33,9 +34,6 @@ $: winner = $game ? $game.winner : null;
 // The game starts by dealing 7 cards to each player,
 // so render 7 cards on top of the deck per player to animate that.
 $: deckTop = $game ? $game.deck.slice(0, $game.players.length * 7).reverse() : [];
-
-// Some svelte plugin doesn't like us importing types, so work around that
-type GameCard = typeof deckTop[0];
 
 let pileTop: GameCard[];
 $: {
@@ -59,11 +57,6 @@ function revealCard(card: GameCard) {
   }
 }
 
-function revealCardInHand(card: GameCard, playerName: string) {
-  if (playerName === currentPlayer || watch) {
-    revealCard(card);
-  }
-}
 
 </script>
 
@@ -123,7 +116,7 @@ function revealCardInHand(card: GameCard, playerName: string) {
     <span class="deck">Deck: {$game.deck.length}
       {#each deckTop as deck (deck.id)}
         <div class="card" in:receive={{key: deck.id}} out:send={{key: deck.id}}>
-          <Card role="deck" card={deck} clickable={!watch && $game.currentPlayer == currentPlayer} />
+          <Card role="deck" card={deck} clickable={!watch && $game.currentPlayer == currentPlayerName} />
         </div>
       {/each}
     </span>
@@ -135,27 +128,13 @@ function revealCardInHand(card: GameCard, playerName: string) {
           on:introend="{() => revealCard(pile)}"
           out:send={{key: pile ? pile.id : null}}
         >
-          <Card role="pile" card={pile} startRevealed={$game.lastPlayer === currentPlayer} bind:this={cardRefs[pile ? pile.id : -1]} />
+          <Card role="pile" card={pile} startRevealed={$game.lastPlayer === currentPlayerName} bind:this={cardRefs[pile ? pile.id : -1]} />
         </div>
       {/each}
     </span>
-    {#each $game.players as player}
-      <div class="row">
-        {#each player.hand as card (card.id)}
-          <div class="card"
-            in:receive={{key: card.id}}
-            on:introend="{() => revealCardInHand(card, player.name)}"
-            out:send={{key: card.id}}
-            animate:flip={{duration: 300}}
-          >
-            <Card {card} bind:this={cardRefs[card.id]} clickable={!watch && isClickable($game, currentPlayer, player.name, card, $isProcessing)} />
-          </div>
-        {/each}
-        {#if player.uno}
-          <Card role="uno" owner={player} clickable={!watch} />
-        {/if}
-      </div>
-      <span class="player-name" class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
+    <Hand player={currentPlayer} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
+    {#each otherPlayers as player}
+      <Hand {player} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
     {/each}
   {/if}
 {/if}
