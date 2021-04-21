@@ -107,8 +107,10 @@ function revealCard(card: GameCard) {
   }
 </style>
 
+{#if false}
 <span>Debug: </span>
 <input type="checkbox" bind:checked={debug} />
+{/if}
 
 <div class="container">
 {#if debug}
