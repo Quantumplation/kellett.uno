@@ -6,6 +6,7 @@ import Waiting from './Waiting.svelte';
 import { game, isProcessing, player } from '../store';
 import GameDebug from './GameDebug.svelte';
 import Hand from './Hand.svelte';
+import Winner from './Winner.svelte';
 
 export let navigate: (p) => void;
 export let host = false;
@@ -115,7 +116,7 @@ function revealCard(card: GameCard) {
 {:else if error}
   ERROR: {JSON.stringify(error)}
 {:else if winner}
-  {winner} HAS WON!
+  <Winner {winner} />
 {:else}
   {#if !$game}
     <span>Loading...</span>
