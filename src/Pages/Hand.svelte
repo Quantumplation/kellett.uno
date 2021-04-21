@@ -24,17 +24,27 @@ import { isClickable } from '../Model/model';
   }
 </script>
 <style>
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
   .row {
     display: flex;
     flex-direction: row;
-    justify-content:center;
+    justify-content: center;
     border: 1px solid white;
     border-radius: 5px;
     margin-top: 20px;
     padding-top: 20px;
+    padding-left: 20px;
+    padding-right: 50px;
     min-height: 170px;
     overflow-y:hidden;
     overflow-x:auto;
+  }
+  .row.mine {
+    padding-right: 15px;
   }
   .card {
     width: 108px;
@@ -47,7 +57,8 @@ import { isClickable } from '../Model/model';
   }
 </style>
 
-<div class="row">
+<div class="col">
+<div class="row" class:mine={!overlap}>
   {#each player.hand as card (card.id)}
     <div class="card"
       class:overlap
@@ -66,3 +77,4 @@ import { isClickable } from '../Model/model';
   {/if}
 </div>
 <span class="player-name" class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
+</div>

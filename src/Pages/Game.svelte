@@ -93,6 +93,12 @@ function revealCard(card: GameCard) {
       z-index: -1; // makes sure that the final element (top of the deck/pile) is visible
     }
   }
+  .other-hands {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
 </style>
 
 <span>Debug: </span>
@@ -133,9 +139,11 @@ function revealCard(card: GameCard) {
       {/each}
     </span>
     <Hand player={currentPlayer} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
-    {#each otherPlayers as player}
-      <Hand {player} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
-    {/each}
+    <div class="other-hands">
+      {#each otherPlayers as player}
+        <Hand {player} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
+      {/each}
+    </div>
   {/if}
 {/if}
 </div>
