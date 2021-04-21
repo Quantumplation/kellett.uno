@@ -69,6 +69,11 @@ function revealCard(card: GameCard) {
     flex-direction: column;
     height: 100%;
   }
+  .deck-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+  }
   .row {
     display: flex;
     flex-direction: row;
@@ -119,25 +124,27 @@ function revealCard(card: GameCard) {
   {:else if !$game.currentPlayer}
     <Waiting {navigate} host={host} />
   {:else}
-    <span class="deck">Deck: {$game.deck.length}
-      {#each deckTop as deck (deck.id)}
-        <div class="card" in:receive={{key: deck.id}} out:send={{key: deck.id}}>
-          <Card role="deck" card={deck} clickable={!watch && $game.currentPlayer == currentPlayerName} />
-        </div>
-      {/each}
-    </span>
-    <span class="pile">
-      Pile: {$game.pile.length}
-      {#each pileTop as pile (pile ? pile.id : null)}
-        <div class="card"
-          in:receive={{key: pile ? pile.id : null}}
-          on:introend="{() => revealCard(pile)}"
-          out:send={{key: pile ? pile.id : null}}
-        >
-          <Card role="pile" card={pile} startRevealed={$game.lastPlayer === currentPlayerName} bind:this={cardRefs[pile ? pile.id : -1]} />
-        </div>
-      {/each}
-    </span>
+    <div class="deck-row">
+      <span class="deck">Deck: {$game.deck.length}
+        {#each deckTop as deck (deck.id)}
+          <div class="card" in:receive={{key: deck.id}} out:send={{key: deck.id}}>
+            <Card role="deck" card={deck} clickable={!watch && $game.currentPlayer == currentPlayerName} />
+          </div>
+        {/each}
+      </span>
+      <span class="pile">
+        Pile: {$game.pile.length}
+        {#each pileTop as pile (pile ? pile.id : null)}
+          <div class="card"
+            in:receive={{key: pile ? pile.id : null}}
+            on:introend="{() => revealCard(pile)}"
+            out:send={{key: pile ? pile.id : null}}
+          >
+            <Card role="pile" card={pile} startRevealed={$game.lastPlayer === currentPlayerName} bind:this={cardRefs[pile ? pile.id : -1]} />
+          </div>
+        {/each}
+      </span>
+    </div>
     <Hand player={currentPlayer} {currentPlayerName} {watch} {revealCard} {cardRefs} {send} {receive}></Hand>
     <div class="other-hands">
       {#each otherPlayers as player}
