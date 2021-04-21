@@ -23,7 +23,8 @@ import { isClickable } from '../Model/model';
     }
   }
 </script>
-<style>
+<style type="text/scss">
+  @import '../Components/utilities.scss';
   .col {
     display: flex;
     flex-direction: column;
@@ -46,6 +47,9 @@ import { isClickable } from '../Model/model';
   .row.mine {
     padding-right: 15px;
   }
+  .row.my-turn {
+    border: 2px solid $unoRed;
+  }
   .card {
     width: 108px;
   }
@@ -58,7 +62,7 @@ import { isClickable } from '../Model/model';
 </style>
 
 <div class="col">
-<div class="row" class:mine={!overlap}>
+<div class="row" class:mine={!overlap} class:my-turn={$game.currentPlayer === player.name}>
   {#each player.hand as card (card.id)}
     <div class="card"
       class:overlap

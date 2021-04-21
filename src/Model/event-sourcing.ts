@@ -1,3 +1,4 @@
+import { player } from "../store";
 import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, isLegalMove, newDeck, Pile, rand, shuffleDeck } from "./model";
 
 export function update(game: Game, event: GameEvent): { game: Game, events: GameEvent[] } | GameError {
@@ -87,9 +88,9 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       if(event.player != game.currentPlayer) {
         return { err: true, type: 'out-of-turn', player: event.player, currentPlayer: game.currentPlayer };
       }
-      let player = game.players.find(p => p.name === event.player);
-      if(!player.hand.find(c => cardsEqual(c, event.card))) {
-        return { err: true, type: 'invalid-card', hand: player.hand, card: event.card, pile: game.pile };
+      let playingPlayer = game.players.find(p => p.name === event.player);
+      if(!playingPlayer.hand.find(c => cardsEqual(c, event.card))) {
+        return { err: true, type: 'invalid-card', hand: playingPlayer.hand, card: event.card, pile: game.pile };
       }
 
       let result = play(game, event);
@@ -99,6 +100,16 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
 
       nextGame = result.game;
       events = result.events;
+
+      player.update(p => {
+        if (p && nextGame.currentPlayer === p) {
+          // Play a chime for your turn
+          var audio = new Audio('/sounds/your_turn.wav');
+          audio.play();
+        }
+        return p;
+      });
+
     } break;
     case 'uno': {
       if(!game) {
@@ -145,6 +156,7 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
 
   nextGame.lastEvent = event.id;
   nextGame.events.push(event);
+
   return { game: nextGame, events };
 }
 
