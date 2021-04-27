@@ -81,4 +81,7 @@ import { isClickable } from '../Model/model';
   {/if}
 </div>
 <span class="player-name" class:currentPlayer={player.name === $game.currentPlayer}>{player.name}</span>
+{#if player.flatlining > 10}
+  <span class="timeout">Disconnected... {30 - player.flatlining}s left</span>
+{/if}
 </div>

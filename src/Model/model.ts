@@ -10,7 +10,7 @@ export type Deck = Card[];
 export type Pile = Card[];
 export type Hand = Card[];
 
-export type Player = { name: string, hand: Hand, uno: boolean };
+export type Player = { name: string, hand: Hand, uno: boolean, flatlining?: number };
 
 export type GameEvent =
   | { id?: number, type: 'create', gameId: string }

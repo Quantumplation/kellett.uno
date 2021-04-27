@@ -5,7 +5,7 @@ import { game, page, player } from '../store';
 import Peer from 'peerjs';
 
 let peer: Peer;
-let clients: { [id: string]: { lastEvent: number, conn: Peer.DataConnection } } = {};
+let clients: { [id: string]: { lastEvent: number, conn: Peer.DataConnection, heartbeat: number } } = {};
 let host: Peer.DataConnection;
 
 /** Server code */
@@ -48,9 +48,13 @@ export function startListening(id: string) {
     conn.on('open', () => {
       console.log('[HOST] New connection, ', conn.peer);
       // Keep track of this client
-      clients[conn.peer] = { lastEvent: -1, conn };
+      clients[conn.peer] = { lastEvent: -1, conn, heartbeat: new Date().valueOf() };
       // When we receive data from one of the players
       conn.on('data', (data) => {
+        if (data.type === 'heartbeat') {
+          clients[conn.peer].heartbeat = new Date().valueOf();
+          return;
+        }
         console.log('[HOST] Received:', data);
 
         // If we receive a join event, check for impersonation, or track the player on the connection
@@ -89,8 +93,10 @@ export function startListening(id: string) {
         // Make sure each client sees the events we know about
         for(const c in clients) {
           const client = clients[c];
+          const timeSinceHeartbeat = new Date().valueOf() - client.heartbeat;
+          const dead = timeSinceHeartbeat > 30000;
           // HACK: peerjs has a bug, where they don't emit close events
-          if (client.conn.peerConnection.iceConnectionState === 'disconnected') {
+          if (dead || client.conn.peerConnection.iceConnectionState === 'disconnected') {
             console.log(`[HOST] ${client.conn.metadata} (${client.conn.peer}) has disconnected`);
             let isPlayer = !!client.conn.metadata;
             delete clients[c];
@@ -109,7 +115,18 @@ export function startListening(id: string) {
       });
       // Kick game ever second, just in case
       window.setInterval(() => {
-        game.update(g => g)
+        game.update(g => {
+          if (g) {
+            for(const c in clients) {
+              const client = clients[c];
+              let player = g.players.find(p => p.name == client.conn.metadata);
+              if (player) {
+                player.flatlining = Math.round((new Date().valueOf() - client.heartbeat) / 1000);
+              }
+            }
+          }
+          return g;
+        });
       }, 1000);
     });
   });
@@ -121,6 +138,14 @@ export function connect(id: string) {
     let conn = peer.connect(id, { reliable: true });
     conn.on('open', () => {
       host = conn;
+      // Send a heartbeat every 2 seconds
+      window.setInterval(() => {
+        if (window['stopHeart']) {
+          return;
+        }
+        console.log('[CLNT] Ba-thump');
+        conn.send({ type: 'heartbeat' });
+      }, 2000);
       conn.on('data', (data) => {
         console.log('[CLNT] Received: ', data);
         if (isError(data)) {
