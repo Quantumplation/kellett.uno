@@ -6,6 +6,7 @@
   import Game from './Pages/Game.svelte';
   import GameDebug from './Pages/GameDebug.svelte';
   import { page } from './store';
+import Winner from './Pages/Winner.svelte';
 
   $: console.log(`[LOCAL] Moving to page ${$page}`);
   $: navigate($page);
@@ -55,6 +56,8 @@ function isWatch(p: string) {
   <Create {navigate} />
 {:else if $page.startsWith('join')}
   <Join {navigate} gameCode={gameId($page)} />
-{:else if $page.startsWith('game')}
+{:else if $page.startsWith('game')} />
   <Game {navigate} host={isHost($page)} watch={isWatch($page)} />
+{:else if $page.startsWith('win')}
+  <Winner winner={gameId($page)} />
 {/if}

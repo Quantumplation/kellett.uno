@@ -274,7 +274,9 @@ export function uno(game: Game, event: { caller: string, target: string }): { ga
   game = clone(game);
   let player = game.players.find(p => p.name === event.target);
   if (!player.uno) {
-    return { err: true, type: 'invalid-uno', caller: event.caller, target: event.target };
+    // return { err: true, type: 'invalid-uno', caller: event.caller, target: event.target };
+    // Don't fail, because this might just be a race condition
+    return { game, events: [] };
   }
   player.uno = false;
   if(event.caller === event.target) {
