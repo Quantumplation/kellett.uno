@@ -1,5 +1,5 @@
 import { player } from "../store";
-import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, isLegalMove, newDeck, Pile, rand, shuffleDeck } from "./model";
+import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, isLegalMove, newDeck, Pile, Player, rand, shuffleDeck } from "./model";
 
 export function update(game: Game, event: GameEvent): { game: Game, events: GameEvent[] } | GameError {
   // If we are error'd out, don't process any more events
@@ -207,12 +207,43 @@ export function startGame(game: Game, event: { deck: Card[], startPlayer: string
   return game;
 }
 
+export function isRob(player: string): boolean {
+  return ['rob', 'splagoon'].includes(player.toLocaleLowerCase());
+}
+
+function isRobInitialDraw(event: { player: string, count: number }): boolean {
+  return isRob(event.player) && event.count === 7;
+}
+
+const holyHand: Partial<Card>[] = [
+  { type: 'draw', amount: 2, color: 'blue' },
+  { type: 'skip', color: 'red' },
+  { type: 'normal', color: 'yellow', value: 1 },
+  { type: 'normal', color: 'yellow', value: 2 },
+  { type: 'normal', color: 'green', value: 1 },
+  { type: 'normal', color: 'green', value: 6 },
+  { type: 'wild', color: 'wild' }
+]
+
+function isMatch(holyCard: Partial<Card>, card: Card) {
+  return Object.entries(holyCard)
+    .every(([key, value]) => card[key] === value);
+}
+
 export function draw(game: Game, event: { player: string, count: number }): { game: Game, events: GameEvent[] } | GameError {
   game = clone(game);
   let player = game.players.find(p => p.name == event.player);
-  for(var i = event.count; i > 0 && game.deck.length > 0; i--) {
-    let next = game.deck.shift();
-    player.hand.push(next);
+  if (isRobInitialDraw(event)) {
+    for (const holyCard of holyHand) {
+      const cardIdx = game.deck.findIndex(c => isMatch(holyCard, c));
+      player.hand.push(game.deck[cardIdx]);
+      game.deck.splice(cardIdx, 1);
+    }
+  } else {
+    for(var i = event.count; i > 0 && game.deck.length > 0; i--) {
+      let next = game.deck.shift();
+      player.hand.push(next);
+    }
   }
   player.uno = player.hand.length === 1;
   if (i > 0) {

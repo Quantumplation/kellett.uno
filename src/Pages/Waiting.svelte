@@ -2,6 +2,7 @@
 import shortid from 'shortid';
 import App from '../App.svelte';
 import Button from '../Components/button.svelte';
+import { isRob } from '../Model/event-sourcing';
 import { newDeck, randomPlayer } from '../Model/model';
 import { emitEvent } from '../Model/peers';
 import { game } from '../store';
@@ -59,7 +60,10 @@ function startGame() {
     emitEvent({ type: 'start', deck: newDeck($game.players.length), startPlayer: randomPlayer($game.players).name });
     
     // Draw a hand for each player
-    for(const player of $game.players) {
+    for(const player of $game.players.filter(p => isRob(p.name))) {
+        emitEvent({ type: 'draw', player: player.name, count: 7})
+    }
+    for(const player of $game.players.filter(p => !isRob(p.name))) {
         emitEvent({ type: 'draw', player: player.name, count: 7 });
     }
 
