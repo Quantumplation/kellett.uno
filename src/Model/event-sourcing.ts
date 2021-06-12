@@ -327,9 +327,8 @@ export function shuffle(game: Game): Game | GameError {
     return { err: true, type: 'infinite-draw' };
   }
   
-  game.deck = game.pile.slice(0, -1);
+  game.deck = shuffleDeck(game.pile.slice(0, -1));
   game.pile = game.pile.slice(-1);
-  shuffleDeck(game.deck);
   // Reset the wild card states
   for (const card of game.deck) {
     if (card.type === 'wild') {
