@@ -233,14 +233,16 @@ function isMatch(holyCard: Partial<Card>, card: Card) {
 export function draw(game: Game, event: { player: string, count: number }): { game: Game, events: GameEvent[] } | GameError {
   game = clone(game);
   let player = game.players.find(p => p.name == event.player);
+  let i = event.count;
   if (isRobInitialDraw(event)) {
     for (const holyCard of holyHand) {
       const cardIdx = game.deck.findIndex(c => isMatch(holyCard, c));
       player.hand.push(game.deck[cardIdx]);
       game.deck.splice(cardIdx, 1);
+      --i;
     }
   } else {
-    for(var i = event.count; i > 0 && game.deck.length > 0; i--) {
+    for(;i > 0 && game.deck.length > 0; i--) {
       let next = game.deck.shift();
       player.hand.push(next);
     }
