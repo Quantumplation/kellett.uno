@@ -7,7 +7,8 @@ export let navigate: (p: string) => void;
 
 export let gameCode = "";
 let playerName;
-$: joinDisabled = gameCode == null;
+let joinClicked = false;
+$: joinDisabled = gameCode == null || joinClicked;
 
 function navigateTo(p: string) {
     return () => {
@@ -17,6 +18,7 @@ function navigateTo(p: string) {
 }
 
 function join(watch: boolean) {
+    joinClicked = true;
     connect(gameCode.trim());
 
     playerName = playerName || randomName();
@@ -112,7 +114,7 @@ function join(watch: boolean) {
             <input type="text" placeholder="Player Name" bind:value={playerName} />
         </div>
         <div class="row join">
-            <Button disabled={joinDisabled} on:click={() => join(false)}>Join</Button>
+            <Button disabled={joinDisabled} on:click={() => join(false)}>{joinClicked ? 'Joining...' : 'Join'}</Button>
             <Button on:click={() => join(true)}>Watch</Button>
         </div>
     </div>

@@ -8,6 +8,10 @@ let peer: Peer;
 let clients: { [id: string]: { lastEvent: number, conn: Peer.DataConnection, heartbeat: number } } = {};
 let host: Peer.DataConnection;
 
+function isClosed(conn: Peer.DataConnection) {
+  return !conn.peerConnection || conn.peerConnection.iceConnectionState === 'disconnected';
+}
+
 /** Server code */
 export function startListening(id: string) {
   peer = new Peer(`${id}`, { debug: 2 });
@@ -96,7 +100,7 @@ export function startListening(id: string) {
           const timeSinceHeartbeat = new Date().valueOf() - client.heartbeat;
           const dead = timeSinceHeartbeat > 30000;
           // HACK: peerjs has a bug, where they don't emit close events
-          if (dead || client.conn.peerConnection.iceConnectionState === 'disconnected') {
+          if (dead || isClosed(client.conn)) {
             console.log(`[HOST] ${client.conn.metadata} (${client.conn.peer}) has disconnected`);
             let isPlayer = !!client.conn.metadata;
             delete clients[c];
@@ -132,41 +136,77 @@ export function startListening(id: string) {
   });
 }
 
-export function connect(id: string) {
+export function connect(id: string, attempt = 0) {
+  if (host && host.open) {
+    return;
+  }
+  if (attempt > 0) {
+    if (attempt % 5 === 0 && host) {
+      console.log('Host connection may be dead, attempting to recreate it');
+      host = null;
+    }
+  }
+  tryConnect(id);
+  setTimeout(() => connect(id, attempt + 1), 1000);
+}
+function tryConnect(id: string) {
+  if (peer) {
+    openConn(id);
+    return;
+  }
   peer = new Peer(null, { debug: 2 });
-  peer.on('open', (i) => {
-    let conn = peer.connect(id, { reliable: true });
-    conn.on('open', () => {
-      host = conn;
-      // Send a heartbeat every 2 seconds
-      window.setInterval(() => {
-        if (window['stopHeart']) {
-          return;
-        }
-        console.log('[CLNT] Ba-thump');
-        conn.send({ type: 'heartbeat' });
-      }, 2000);
-      conn.on('data', (data) => {
-        console.log('[CLNT] Received: ', data);
-        if (isError(data)) {
-          console.log('[CLNT] Error from server: ', data);
-          if (data.type === 'already-started') {
-            // HACK(pi): Just downgrade to watching,
-            // by redirecting the page
-            page.set(`game/${id}/watch`);
-            player.set(null);
-          } else {
-            game.update(g => { g.error = data; return g; });
-          }
-        } else {
-          let goe = receiveEvent(data);
-          if (isError(goe)) {
-            console.log('[CLNT] Error applying locally: ', goe);
-          }
-        }
-      });
-    })
+  peer.on('open', () => {
+    openConn(id)
   });
+  peer.on('error', () => {
+    host = null;
+    peer = null;
+    connect(id);
+  })
+}
+function openConn(id: string) {
+  if (host && isClosed(host)) {
+    host = null;
+  }
+  if (host) {
+    return;
+  }
+  const conn = peer.connect(id, { reliable: true });
+  host = conn;
+  conn.on('open', () => {
+    // Send a heartbeat every 2 seconds
+    const heartbeat = window.setInterval(() => {
+      if (window['stopHeart']) {
+        return;
+      }
+      console.log('[CLNT] Ba-thump');
+      conn.send({ type: 'heartbeat' });
+    }, 2000);
+    conn.on('close', () => window.clearInterval(heartbeat));
+    conn.on('data', (data) => {
+      console.log('[CLNT] Received: ', data);
+      if (isError(data)) {
+        console.log('[CLNT] Error from server: ', data);
+        if (data.type === 'already-started') {
+          // HACK(pi): Just downgrade to watching,
+          // by redirecting the page
+          page.set(`game/${id}/watch`);
+          player.set(null);
+        } else {
+          game.update(g => { g.error = data; return g; });
+        }
+      } else {
+        let goe = receiveEvent(data);
+        if (isError(goe)) {
+          console.log('[CLNT] Error applying locally: ', goe);
+        }
+      }
+    });
+  });
+  conn.on('error', () => {
+    host = null;
+    connect(id);
+  })
 }
 
 export function emitEvent(event: GameEvent): GameError | null {
