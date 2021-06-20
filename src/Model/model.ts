@@ -1,3 +1,5 @@
+import Alea from 'alea';
+
 export type Color = 'red' | 'green' | 'blue' | 'yellow' | 'wild';
 export type Card = 
   | { id: number, type: 'normal', color: Color, value: number }
@@ -15,12 +17,12 @@ export type Player = { name: string, hand: Hand, uno: boolean, flatlining?: numb
 export type GameEvent =
   | { id?: number, type: 'create', gameId: string }
   | { id?: number, type: 'join', player: string }
-  | { id?: number, type: 'leave', player: string }
+  | { id?: number, type: 'leave', player: string, seed: number }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
   | { id?: number, type: 'draw', player: string, count: number }
   | { id?: number, type: 'play', player: string, card: Card, chosenColor?: Color }
   | { id?: number, type: 'uno', target: string, caller: string }
-  | { id?: number, type: 'shuffle' }
+  | { id?: number, type: 'shuffle', seed: number }
   | { id?: number, type: 'end', winner: string, reason: string };
 
 export type GameError =
@@ -55,7 +57,18 @@ export type Game = {
   direction: number,
 };
 
-export function rand(min: number, max: number) {
+export function newSeed(): number {
+  return new Date().valueOf();
+}
+
+function getPrng(seed: number) {
+  const prng = Alea(seed);
+  return (min: number, max: number) => {
+    return min + Math.floor(prng() * (max - min));
+  }
+}
+
+function rand(min: number, max: number) {
   return min + Math.floor(Math.random() * (max - min));
 }
 
@@ -79,11 +92,12 @@ export function cardsEqual(a: Card, b: Card) {
 }
 
 // Fisher Yates shuffle
-export function shuffleDeck(old: Deck): Deck {
+export function shuffleDeck(old: Deck, seed: number): Deck {
+  const prng = getPrng(seed)
   let newDeck = Array.from(old);
   for(let idx = 0; idx < newDeck.length - 1; idx++) {
     // Pick a swap position
-    let swapWith = rand(idx, newDeck.length);
+    let swapWith = prng(idx, newDeck.length);
     let temp = newDeck[idx];
     newDeck[idx] = newDeck[swapWith];
     newDeck[swapWith] = temp;
@@ -124,7 +138,7 @@ export function newDeck(players: number): Deck {
     }
   }
 
-  return shuffleDeck(deck);
+  return shuffleDeck(deck, newSeed());
 }
 
 export function randomPlayer(players: Player[]) {

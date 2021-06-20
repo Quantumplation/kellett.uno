@@ -1,4 +1,4 @@
-import type { Game, GameEvent, GameError } from './model';
+import { Game, GameEvent, GameError, newSeed } from './model';
 import { isError } from './model';
 import { update } from "./event-sourcing";
 import { game, page, player } from '../store';
@@ -34,7 +34,7 @@ export function startListening(id: string) {
       console.log('[HOST] Someone left');
       // Attempt to apply the event to the game state
       if (conn.metadata) {
-        let goe = emitEvent({ type: 'leave', player: conn.metadata });
+        let goe = emitEvent({ type: 'leave', player: conn.metadata, seed: newSeed() });
         // If we got an error, mirror that to the person who sent us the message
         if (isError(goe)) {
           console.log('[HOST] Error applying event', goe);
@@ -101,7 +101,7 @@ export function startListening(id: string) {
             let isPlayer = !!client.conn.metadata;
             delete clients[c];
             if (isPlayer) {
-              emitEvent({ type: 'leave', player: client.conn.metadata });
+              emitEvent({ type: 'leave', player: client.conn.metadata, seed: newSeed() });
             }
             continue;
           }

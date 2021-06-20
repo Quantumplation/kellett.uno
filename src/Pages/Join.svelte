@@ -1,6 +1,6 @@
 <script lang="ts">
 import Button from '../Components/button.svelte';
-import { rand, isError, randomName } from '../Model/model';
+import { randomName } from '../Model/model';
 import { connect, emitEvent } from '../Model/peers';
 import { game, player } from '../store';
 export let navigate: (p: string) => void;

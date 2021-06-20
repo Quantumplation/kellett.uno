@@ -1,5 +1,5 @@
 import { player } from "../store";
-import { Card, cardsEqual, Color, Game, GameError, GameEvent, Hand, isError, isLegalMove, newDeck, Pile, Player, rand, shuffleDeck } from "./model";
+import { Card, cardsEqual, Color, Game, GameError, GameEvent, newSeed, Hand, isError, isLegalMove, newDeck, Pile, Player, shuffleDeck } from "./model";
 
 export function update(game: Game, event: GameEvent): { game: Game, events: GameEvent[] } | GameError {
   // If we are error'd out, don't process any more events
@@ -47,7 +47,7 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
           // Game has started, shuffle their hand into the deck
           let player = nextGame.players.find(p => p.name === event.player);
           nextGame.deck.push(...player.hand);
-          nextGame.deck = shuffleDeck(nextGame.deck);
+          nextGame.deck = shuffleDeck(nextGame.deck, event.seed);
         }
         nextGame.players = nextGame.players.filter(p => p.name != event.player);
       }
@@ -130,7 +130,7 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
       if (!game) {
         return { err: true, type: 'not-created', event };
       }
-      var goe = shuffle(game);
+      var goe = shuffle(game, event.seed);
       if (isError(goe)) {
         return goe;
       }
@@ -151,7 +151,7 @@ export function update(game: Game, event: GameEvent): { game: Game, events: Game
     return { err: true, type: 'unknown', message: 'No branches produced a next game state' };
   }
   if (nextGame.currentPlayer && nextGame.deck.length === 0) {
-    events.unshift({ type: 'shuffle' });
+    events.unshift({ type: 'shuffle', seed: newSeed() });
   }
 
   nextGame.lastEvent = event.id;
@@ -319,7 +319,7 @@ export function uno(game: Game, event: { caller: string, target: string }): { ga
   return { game, events };
 }
 
-export function shuffle(game: Game): Game | GameError {
+export function shuffle(game: Game, seed: number): Game | GameError {
   game = clone(game);
 
   if (game.pile.length === 1 && game.deck.length === 0) {
@@ -327,7 +327,7 @@ export function shuffle(game: Game): Game | GameError {
     return { err: true, type: 'infinite-draw' };
   }
   
-  game.deck = shuffleDeck(game.pile.slice(0, -1));
+  game.deck = shuffleDeck(game.pile.slice(0, -1), seed);
   game.pile = game.pile.slice(-1);
   // Reset the wild card states
   for (const card of game.deck) {
