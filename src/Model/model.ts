@@ -15,7 +15,7 @@ export type Hand = Card[];
 export type Player = { name: string, hand: Hand, uno: boolean, flatlining?: number };
 
 export type GameEvent =
-  | { id?: number, type: 'create', gameId: string }
+  | { id?: number, type: 'create', gameId: string, turboMode: boolean }
   | { id?: number, type: 'join', player: string }
   | { id?: number, type: 'leave', player: string, seed: number }
   | { id?: number, type: 'start', deck: Card[], startPlayer: string }
@@ -55,6 +55,7 @@ export type Game = {
   deck: Deck,
   pile: Pile,
   direction: number,
+  turboMode: boolean,
 };
 
 export function newSeed(): number {
@@ -105,7 +106,7 @@ export function shuffleDeck(old: Deck, seed: number): Deck {
   return newDeck;
 }
 
-export function newDeck(players: number): Deck {
+export function newDeck(players: number, turboMode: boolean): Deck {
   let id = 0;
   let deck: Deck = [];
 
@@ -116,8 +117,10 @@ export function newDeck(players: number): Deck {
     // An uno deck has 108 cards
     //  - four 0's, one of each color
     //  - eighteen 1-9's, two of each color/number
+    // except in turbo mode, where we leave out cards 2-9
     for(const color of ['red', 'yellow', 'blue', 'green'] as const) {
-      for(let value = 0; value < 10; value++) {
+      const maxNumber = turboMode ? 1 : 9;
+      for(let value = 0; value <= maxNumber; value++) {
         deck.push({ id: id++, type: 'normal', color, value });
         if(value != 0) {
           deck.push({ id: id++, type: 'normal', color, value });

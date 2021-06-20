@@ -164,7 +164,7 @@ function clone<T>(a: T): T {
   return JSON.parse(JSON.stringify(a));
 }
 
-export function createGame(event: { gameId: string }): Game {
+export function createGame(event: { gameId: string, turboMode: boolean }): Game {
   return {
     id: event.gameId,
     error: null,
@@ -177,6 +177,7 @@ export function createGame(event: { gameId: string }): Game {
     deck: [],
     pile: [],
     direction: 1,
+    turboMode: event.turboMode,
   };
 }
 
@@ -237,15 +238,16 @@ export function draw(game: Game, event: { player: string, count: number }): { ga
   if (isRobInitialDraw(event)) {
     for (const holyCard of holyHand) {
       const cardIdx = game.deck.findIndex(c => isMatch(holyCard, c));
-      player.hand.push(game.deck[cardIdx]);
-      game.deck.splice(cardIdx, 1);
-      --i;
+      if (cardIdx >= 0) {
+        player.hand.push(game.deck[cardIdx]);
+        game.deck.splice(cardIdx, 1);
+        --i;
+      }
     }
-  } else {
-    for(;i > 0 && game.deck.length > 0; i--) {
-      let next = game.deck.shift();
-      player.hand.push(next);
-    }
+  }
+  for(;i > 0 && game.deck.length > 0; i--) {
+    let next = game.deck.shift();
+    player.hand.push(next);
   }
   player.uno = player.hand.length === 1;
   if (i > 0) {

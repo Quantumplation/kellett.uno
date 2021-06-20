@@ -57,7 +57,7 @@ function navigateTo(p: string) {
 }
 
 function startGame() {
-    emitEvent({ type: 'start', deck: newDeck($game.players.length), startPlayer: randomPlayer($game.players).name });
+    emitEvent({ type: 'start', deck: newDeck($game.players.length, $game.turboMode), startPlayer: randomPlayer($game.players).name });
     
     // Draw a hand for each player
     for(const player of $game.players.filter(p => isRob(p.name))) {

@@ -14,7 +14,8 @@ function navigateTo(p: string) {
     }
 }
 
-let playerName;
+let playerName: string;
+let turboMode = false;
 
 shortid.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_');
 
@@ -29,7 +30,7 @@ function newGame() {
 
     playerName = playerName || randomName();
 
-    emitEvent({ type: 'create', gameId: id });
+    emitEvent({ type: 'create', gameId: id, turboMode });
     emitEvent({ type: 'join', player: playerName });
     player.set(playerName);
     startListening(id);
@@ -93,6 +94,10 @@ function newGame() {
         color: $unoRed;
         text-decoration: underline;
     }
+
+    input[type=checkbox] {
+        margin: 8px 10px 10px 10px;
+    }
 </style>
 
 <div class="page">
@@ -104,6 +109,11 @@ function newGame() {
         </ul>
         <div class="row code">
             <input type="text" placeholder="Player Name" bind:value={playerName} />
+        </div>
+        <div class="row">
+            <label>Turbo Mode?
+                <input type="checkbox" bind:checked={turboMode} />
+            </label>
         </div>
         <div class="row join">
             <Button on:click={newGame}>New</Button>
